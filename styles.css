@@ -2318,3 +2318,30 @@ button.button-primary[type="submit"]:hover {
     font-weight: 500;
   }
 }
+
+/* Refine mobile header controls */
+@media (max-width: 768px) {
+
+  .language-switcher {
+    gap: 4px !important;
+  }
+
+  .language-link {
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+  }
+
+  .language-link img {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .menu-toggle {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .menu-toggle::before {
+    font-size: 24px !important;
+  }
+}
