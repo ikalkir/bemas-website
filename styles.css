@@ -2277,3 +2277,36 @@ button.button-primary[type="submit"]:hover {
     display: none !important;
   }
 }
+
+/* Mobile menu icon fix */
+@media (max-width: 768px) {
+  .menu-toggle,
+  .mobile-menu-toggle,
+  .nav-toggle {
+    position: relative !important;
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .menu-toggle span,
+  .mobile-menu-toggle span,
+  .nav-toggle span {
+    display: block !important;
+    width: 22px !important;
+    height: 2px !important;
+    background: #111820 !important;
+    border-radius: 999px !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .menu-toggle span + span,
+  .mobile-menu-toggle span + span,
+  .nav-toggle span + span {
+    margin-top: 6px !important;
+  }
+}
