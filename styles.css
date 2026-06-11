@@ -2021,3 +2021,121 @@ button.button-primary[type="submit"]:hover {
 .fleet-gallery img:nth-child(3) {
   height: 320px !important;
 }
+
+/* Homepage showcase hero */
+.homepage-showcase-hero {
+  position: relative;
+  max-width: 1180px;
+  margin: 34px auto 0;
+  min-height: 520px;
+  border-radius: 34px;
+  overflow: hidden;
+  box-shadow: 0 28px 70px rgba(12, 30, 64, 0.18);
+}
+
+.homepage-showcase-hero img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.homepage-showcase-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(8, 20, 44, 0.78), rgba(8, 20, 44, 0.36), rgba(8, 20, 44, 0.08));
+}
+
+.homepage-showcase-overlay {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  padding: 72px;
+  color: #fff;
+}
+
+.homepage-showcase-overlay h2 {
+  color: #fff;
+  font-size: clamp(38px, 5vw, 72px);
+  line-height: 1;
+  margin: 14px 0 18px;
+}
+
+.homepage-showcase-overlay p {
+  color: rgba(255,255,255,.9);
+  font-size: 19px;
+  line-height: 1.7;
+}
+
+@media (max-width: 760px) {
+  .homepage-showcase-hero {
+    margin: 20px 16px 0;
+    min-height: 460px;
+    border-radius: 24px;
+  }
+
+  .homepage-showcase-overlay {
+    padding: 42px 24px;
+  }
+}
+
+/* Homepage showcase hero */
+.homepage-showcase-hero {
+  position: relative;
+  max-width: 1180px;
+  margin: 34px auto 0;
+  min-height: 520px;
+  border-radius: 34px;
+  overflow: hidden;
+  box-shadow: 0 28px 70px rgba(12, 30, 64, 0.18);
+}
+
+.homepage-showcase-hero img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.homepage-showcase-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(8, 20, 44, 0.78), rgba(8, 20, 44, 0.36), rgba(8, 20, 44, 0.08));
+}
+
+.homepage-showcase-overlay {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  padding: 72px;
+  color: #fff;
+}
+
+.homepage-showcase-overlay h2 {
+  color: #fff;
+  font-size: clamp(38px, 5vw, 72px);
+  line-height: 1;
+  margin: 14px 0 18px;
+}
+
+.homepage-showcase-overlay p {
+  color: rgba(255,255,255,.9);
+  font-size: 19px;
+  line-height: 1.7;
+}
+
+@media (max-width: 760px) {
+  .homepage-showcase-hero {
+    margin: 20px 16px 0;
+    min-height: 460px;
+    border-radius: 24px;
+  }
+
+  .homepage-showcase-overlay {
+    padding: 42px 24px;
+  }
+}
