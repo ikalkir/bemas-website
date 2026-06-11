@@ -1922,3 +1922,8 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
 .quality-step strong {
   color: #1f4ea8 !important;
 }
+
+/* Quality process step numbers brand color */
+.process-grid article span {
+  color: #1f4ea8 !important;
+}
