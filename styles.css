@@ -2286,3 +2286,14 @@ button.button-primary[type="submit"]:hover {
 .menu-toggle span {
   flex: 0 0 auto;
 }
+
+/* Final hamburger spacing override */
+@media (max-width: 980px) {
+  .menu-toggle {
+    row-gap: 3px !important;
+  }
+
+  .menu-toggle span + span {
+    margin-top: 0 !important;
+  }
+}
