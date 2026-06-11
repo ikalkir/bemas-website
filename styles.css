@@ -1978,3 +1978,20 @@ button.button-primary[type="submit"]:hover {
   border-color: #1f2328 !important;
   color: #ffffff !important;
 }
+
+/* Product grid 5-column layout */
+.product-preview .product-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+@media (max-width: 1200px) {
+  .product-preview .product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .product-preview .product-grid {
+    grid-template-columns: 1fr;
+  }
+}
