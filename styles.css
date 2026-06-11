@@ -264,7 +264,7 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
 }
 
 .menu-toggle span + span {
-  margin-top: 5px;
+  margin-top: 3px;
 }
 
 .hero {
