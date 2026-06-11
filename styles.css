@@ -1927,3 +1927,39 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
 .process-grid article span {
   color: #1f4ea8 !important;
 }
+
+/* Replace remaining yellow accents with dark gray */
+.contact-card,
+.contact-info-card,
+.info-card {
+  border-left-color: #2f343b !important;
+}
+
+.site-footer,
+.footer,
+footer {
+  border-top-color: #2f343b !important;
+}
+
+.button.button-primary,
+.contact-form button,
+.export-home-cta .button,
+.hero-actions .button-primary {
+  background: #2f343b !important;
+  color: #ffffff !important;
+  border-color: #2f343b !important;
+}
+
+.button.button-primary:hover,
+.contact-form button:hover,
+.export-home-cta .button:hover,
+.hero-actions .button-primary:hover {
+  background: #1f2328 !important;
+  color: #ffffff !important;
+}
+
+.certificate-dot,
+.slider-dot,
+.carousel-dot {
+  border-color: #2f343b !important;
+}
