@@ -2139,3 +2139,12 @@ button.button-primary[type="submit"]:hover {
     padding: 42px 24px;
   }
 }
+
+/* Showcase image only */
+.homepage-showcase-hero {
+  min-height: 620px !important;
+}
+
+.homepage-showcase-overlay {
+  display: none !important;
+}
