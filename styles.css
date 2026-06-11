@@ -2166,3 +2166,10 @@ button.button-primary[type="submit"]:hover {
   object-fit: contain !important;
   display: block !important;
 }
+
+/* Hide duplicate large hero logo on mobile only */
+@media (max-width: 768px) {
+  .hero-logo-title {
+    display: none !important;
+  }
+}
