@@ -2270,3 +2270,10 @@ button.button-primary[type="submit"]:hover {
     border-color: #2f343b !important;
   }
 }
+
+/* Hide top hero quote button on mobile only */
+@media (max-width: 768px) {
+  .hero-actions {
+    display: none !important;
+  }
+}
