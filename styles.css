@@ -1915,3 +1915,10 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
     grid-template-columns: 1fr;
   }
 }
+
+/* Quality process number color */
+.process-card strong,
+.quality-card strong,
+.quality-step strong {
+  color: #1f4ea8 !important;
+}
