@@ -2008,3 +2008,16 @@ button.button-primary[type="submit"]:hover {
   height: 260px;
   object-fit: cover;
 }
+
+/* Fleet gallery equal image sizing */
+.fleet-gallery img {
+  width: 100% !important;
+  height: 320px !important;
+  object-fit: cover !important;
+}
+
+.fleet-gallery img:first-child,
+.fleet-gallery img:nth-child(2),
+.fleet-gallery img:nth-child(3) {
+  height: 320px !important;
+}
