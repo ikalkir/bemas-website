@@ -2000,3 +2000,11 @@ button.button-primary[type="submit"]:hover {
   color: #1f4ea8 !important;
   font-weight: 800;
 }
+
+/* Machine gallery image sizing */
+.machine-gallery img,
+.gallery-grid img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+}
