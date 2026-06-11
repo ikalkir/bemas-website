@@ -2277,3 +2277,12 @@ button.button-primary[type="submit"]:hover {
     display: none !important;
   }
 }
+
+/* Fix hamburger lines stacking */
+.menu-toggle {
+  flex-direction: column;
+}
+
+.menu-toggle span {
+  flex: 0 0 auto;
+}
