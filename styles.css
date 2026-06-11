@@ -1995,3 +1995,8 @@ button.button-primary[type="submit"]:hover {
     grid-template-columns: 1fr;
   }
 }
+
+.nav-export-link {
+  color: #1f4ea8 !important;
+  font-weight: 800;
+}
