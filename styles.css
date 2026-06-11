@@ -1963,3 +1963,18 @@ footer {
 .carousel-dot {
   border-color: #2f343b !important;
 }
+
+/* Contact submit button only */
+.contact-form button.button-primary,
+button.button-primary[type="submit"] {
+  background: #2f343b !important;
+  border-color: #2f343b !important;
+  color: #ffffff !important;
+}
+
+.contact-form button.button-primary:hover,
+button.button-primary[type="submit"]:hover {
+  background: #1f2328 !important;
+  border-color: #1f2328 !important;
+  color: #ffffff !important;
+}
