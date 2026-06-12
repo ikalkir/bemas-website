@@ -2466,3 +2466,34 @@ button.button-primary[type="submit"]:hover {
     display: none !important;
   }
 }
+
+/* Smooth infinite Urla gallery */
+.urla-carousel {
+  animation: urla-scroll 55s linear infinite;
+  width: max-content !important;
+  overflow: visible !important;
+}
+
+.urla-carousel-wrap {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scrollbar-width: none !important;
+}
+
+.urla-carousel-wrap::-webkit-scrollbar {
+  display: none !important;
+}
+
+.urla-carousel-wrap:hover .urla-carousel,
+.urla-carousel-wrap:active .urla-carousel {
+  animation-play-state: paused;
+}
+
+@keyframes urla-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
