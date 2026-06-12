@@ -465,3 +465,107 @@ if (contactForm && formStatus) {
 
 
 
+
+// Urla carousel stable infinite auto-loop
+document.addEventListener("DOMContentLoaded", () => {
+  const carousel = document.querySelector("[data-urla-carousel]");
+  if (!carousel || carousel.dataset.loopReady === "true") return;
+
+  carousel.dataset.loopReady = "true";
+
+  const originalCards = Array.from(carousel.children).filter((item) =>
+    item.classList.contains("urla-carousel-card")
+  );
+
+  if (originalCards.length < 2) return;
+
+  originalCards.forEach((card) => {
+    const clone = card.cloneNode(true);
+    clone.setAttribute("aria-hidden", "true");
+    carousel.appendChild(clone);
+  });
+
+  const prev = document.querySelector(".urla-carousel-btn.prev");
+  const next = document.querySelector(".urla-carousel-btn.next");
+
+  let paused = false;
+  let resumeTimer = null;
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+  const speed = isMobile ? 0.35 : 0.55;
+
+  const getLoopPoint = () => carousel.scrollWidth / 2;
+
+  const normalizeScroll = () => {
+    const loopPoint = getLoopPoint();
+
+    if (carousel.scrollLeft >= loopPoint) {
+      carousel.scrollLeft = carousel.scrollLeft - loopPoint;
+    }
+
+    if (carousel.scrollLeft < 0) {
+      carousel.scrollLeft = loopPoint + carousel.scrollLeft;
+    }
+  };
+
+  const pauseTemporarily = (delay = 1400) => {
+    paused = true;
+    clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(() => {
+      paused = false;
+    }, delay);
+  };
+
+  const tick = () => {
+    if (!paused) {
+      carousel.scrollLeft += speed;
+      normalizeScroll();
+    }
+
+    requestAnimationFrame(tick);
+  };
+
+  prev?.addEventListener("click", () => {
+    pauseTemporarily(1200);
+    const loopPoint = getLoopPoint();
+    const amount = Math.min(640, carousel.clientWidth * 0.85);
+
+    if (carousel.scrollLeft < amount) {
+      carousel.scrollLeft += loopPoint;
+    }
+
+    carousel.scrollBy({ left: -amount, behavior: "smooth" });
+
+    setTimeout(normalizeScroll, 900);
+  });
+
+  next?.addEventListener("click", () => {
+    pauseTemporarily(1200);
+    const amount = Math.min(640, carousel.clientWidth * 0.85);
+
+    carousel.scrollBy({ left: amount, behavior: "smooth" });
+
+    setTimeout(normalizeScroll, 900);
+  });
+
+  carousel.addEventListener("mouseenter", () => {
+    paused = true;
+  });
+
+  carousel.addEventListener("mouseleave", () => {
+    paused = false;
+  });
+
+  carousel.addEventListener("touchstart", () => {
+    pauseTemporarily(2200);
+  }, { passive: true });
+
+  carousel.addEventListener("touchend", () => {
+    pauseTemporarily(1200);
+  }, { passive: true });
+
+  carousel.addEventListener("wheel", () => {
+    pauseTemporarily(1200);
+  }, { passive: true });
+
+  requestAnimationFrame(tick);
+});

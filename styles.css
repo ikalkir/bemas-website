@@ -2527,3 +2527,62 @@ button.button-primary[type="submit"]:hover {
     width: 86vw !important;
   }
 }
+
+/* Urla carousel final stable auto-loop layout */
+.urla-carousel-wrap {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.urla-carousel {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 22px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
+  animation: none !important;
+  transform: none !important;
+  scrollbar-width: none !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.urla-carousel::-webkit-scrollbar {
+  display: none !important;
+}
+
+.urla-carousel-card {
+  flex: 0 0 min(620px, 82vw) !important;
+  width: min(620px, 82vw) !important;
+  height: 390px !important;
+  margin: 0 !important;
+  scroll-snap-align: none !important;
+}
+
+.urla-carousel-card img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+@media (max-width: 768px) {
+  .urla-carousel {
+    gap: 14px !important;
+    padding: 4px 0 18px !important;
+  }
+
+  .urla-carousel-card {
+    flex: 0 0 86vw !important;
+    width: 86vw !important;
+    height: 260px !important;
+    border-radius: 16px !important;
+  }
+
+  .urla-carousel-btn {
+    display: none !important;
+  }
+}
