@@ -2176,6 +2176,7 @@ button.button-primary[type="submit"]:hover {
 
 /* Corporate footer */
 .corporate-footer {
+  display: block;
   padding: 56px 7vw 28px;
   background: #111820;
   color: #ffffff;
@@ -2247,6 +2248,67 @@ button.button-primary[type="submit"]:hover {
 @media (max-width: 560px) {
   .footer-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .corporate-footer {
+    padding: 34px 22px calc(42px + env(safe-area-inset-bottom));
+  }
+
+  .footer-grid {
+    gap: 0;
+  }
+
+  .footer-grid > div {
+    padding: 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, .12);
+  }
+
+  .footer-grid > div:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .footer-brand img {
+    max-width: 168px;
+    margin: 0 0 14px;
+    padding: 9px 12px;
+    border-radius: 12px;
+  }
+
+  .footer-brand p {
+    max-width: 320px;
+    margin: 0;
+    color: rgba(255, 255, 255, .68);
+    font-size: .92rem;
+    line-height: 1.55;
+    text-align: left;
+  }
+
+  .corporate-footer h3 {
+    margin-bottom: 12px;
+    font-size: 13px;
+    letter-spacing: .12em;
+  }
+
+  .corporate-footer a,
+  .corporate-footer span {
+    margin-bottom: 8px;
+    font-size: 16px;
+    line-height: 1.45;
+  }
+
+  .footer-bottom {
+    display: grid;
+    gap: 8px;
+    margin-top: 4px;
+    padding-top: 18px;
+  }
+
+  .footer-bottom span {
+    font-size: 13px;
+    line-height: 1.45;
   }
 }
 
