@@ -632,3 +632,278 @@ document.addEventListener("DOMContentLoaded", () => {
   requestAnimationFrame(animate);
 });
 // End Urla carousel autoplay force patch
+
+
+// İzmir carousel stable infinite auto-loop START
+document.addEventListener("DOMContentLoaded", () => {
+  const carousel = document.querySelector("[data-izmir-carousel]");
+  if (!carousel || carousel.dataset.izmirLoopReady === "true") return;
+
+  carousel.dataset.izmirLoopReady = "true";
+
+  const originalCards = Array.from(carousel.children).filter((item) =>
+    item.classList.contains("izmir-carousel-card")
+  );
+
+  if (originalCards.length < 2) return;
+
+  originalCards.forEach((card) => {
+    const clone = card.cloneNode(true);
+    clone.setAttribute("aria-hidden", "true");
+    carousel.appendChild(clone);
+  });
+
+  const wrap = carousel.closest(".izmir-carousel-wrap");
+  const prev = wrap?.querySelector(".izmir-carousel-btn.prev");
+  const next = wrap?.querySelector(".izmir-carousel-btn.next");
+
+  let paused = false;
+  let lastTime = null;
+  let resumeTimer = null;
+
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+  const pixelsPerSecond = isMobile ? 34 : 46;
+
+  const getLoopPoint = () => carousel.scrollWidth / 2;
+
+  const normalize = () => {
+    const loopPoint = getLoopPoint();
+    if (loopPoint > carousel.clientWidth && carousel.scrollLeft >= loopPoint) {
+      carousel.scrollLeft = carousel.scrollLeft - loopPoint;
+    }
+  };
+
+  const pauseTemporarily = (duration = 1600) => {
+    paused = true;
+    clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(() => {
+      paused = false;
+      lastTime = null;
+    }, duration);
+  };
+
+  const animate = (time) => {
+    if (lastTime === null) lastTime = time;
+    const delta = time - lastTime;
+    lastTime = time;
+
+    if (!paused) {
+      carousel.scrollLeft += (delta / 1000) * pixelsPerSecond;
+      normalize();
+    }
+
+    requestAnimationFrame(animate);
+  };
+
+  prev?.addEventListener("click", () => {
+    pauseTemporarily(1200);
+    const amount = Math.min(640, carousel.clientWidth * 0.85);
+    carousel.scrollBy({ left: -amount, behavior: "smooth" });
+  });
+
+  next?.addEventListener("click", () => {
+    pauseTemporarily(1200);
+    const amount = Math.min(640, carousel.clientWidth * 0.85);
+    carousel.scrollBy({ left: amount, behavior: "smooth" });
+  });
+
+  carousel.addEventListener("mouseenter", () => {
+    paused = true;
+  });
+
+  carousel.addEventListener("mouseleave", () => {
+    paused = false;
+    lastTime = null;
+  });
+
+  carousel.addEventListener("touchstart", () => pauseTemporarily(2200), { passive: true });
+  carousel.addEventListener("touchend", () => pauseTemporarily(1000), { passive: true });
+  carousel.addEventListener("wheel", () => pauseTemporarily(1400), { passive: true });
+
+  requestAnimationFrame(animate);
+});
+// İzmir carousel stable infinite auto-loop END
+
+
+
+// Materials carousel stable infinite auto-loop START
+document.addEventListener("DOMContentLoaded", () => {
+  const carousel = document.querySelector("[data-materials-carousel]");
+  if (!carousel || carousel.dataset.materialsLoopReady === "true") return;
+
+  carousel.dataset.materialsLoopReady = "true";
+
+  const originalCards = Array.from(carousel.children).filter((item) =>
+    item.classList.contains("materials-carousel-card")
+  );
+
+  if (originalCards.length < 2) return;
+
+  originalCards.forEach((card) => {
+    const clone = card.cloneNode(true);
+    clone.setAttribute("aria-hidden", "true");
+    carousel.appendChild(clone);
+  });
+
+  const wrap = carousel.closest(".materials-carousel-wrap");
+  const prev = wrap?.querySelector(".materials-carousel-btn.prev");
+  const next = wrap?.querySelector(".materials-carousel-btn.next");
+
+  let paused = false;
+  let lastTime = null;
+  let resumeTimer = null;
+
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+  const pixelsPerSecond = isMobile ? 34 : 46;
+
+  const getLoopPoint = () => carousel.scrollWidth / 2;
+
+  const normalize = () => {
+    const loopPoint = getLoopPoint();
+    if (loopPoint > carousel.clientWidth && carousel.scrollLeft >= loopPoint) {
+      carousel.scrollLeft = carousel.scrollLeft - loopPoint;
+    }
+  };
+
+  const pauseTemporarily = (duration = 1600) => {
+    paused = true;
+    clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(() => {
+      paused = false;
+      lastTime = null;
+    }, duration);
+  };
+
+  const animate = (time) => {
+    if (lastTime === null) lastTime = time;
+    const delta = time - lastTime;
+    lastTime = time;
+
+    if (!paused) {
+      carousel.scrollLeft += (delta / 1000) * pixelsPerSecond;
+      normalize();
+    }
+
+    requestAnimationFrame(animate);
+  };
+
+  prev?.addEventListener("click", () => {
+    pauseTemporarily(1200);
+    const amount = Math.min(640, carousel.clientWidth * 0.85);
+    carousel.scrollBy({ left: -amount, behavior: "smooth" });
+  });
+
+  next?.addEventListener("click", () => {
+    pauseTemporarily(1200);
+    const amount = Math.min(640, carousel.clientWidth * 0.85);
+    carousel.scrollBy({ left: amount, behavior: "smooth" });
+  });
+
+  carousel.addEventListener("mouseenter", () => {
+    paused = true;
+  });
+
+  carousel.addEventListener("mouseleave", () => {
+    paused = false;
+    lastTime = null;
+  });
+
+  carousel.addEventListener("touchstart", () => pauseTemporarily(2200), { passive: true });
+  carousel.addEventListener("touchend", () => pauseTemporarily(1000), { passive: true });
+  carousel.addEventListener("wheel", () => pauseTemporarily(1400), { passive: true });
+
+  requestAnimationFrame(animate);
+});
+// Materials carousel stable infinite auto-loop END
+
+
+
+// Machinery carousel stable infinite auto-loop START
+document.addEventListener("DOMContentLoaded", () => {
+  const carousel = document.querySelector("[data-machinery-carousel]");
+  if (!carousel || carousel.dataset.machineryLoopReady === "true") return;
+
+  carousel.dataset.machineryLoopReady = "true";
+
+  const originalCards = Array.from(carousel.children).filter((item) =>
+    item.classList.contains("machinery-carousel-card")
+  );
+
+  if (originalCards.length < 2) return;
+
+  originalCards.forEach((card) => {
+    const clone = card.cloneNode(true);
+    clone.setAttribute("aria-hidden", "true");
+    carousel.appendChild(clone);
+  });
+
+  const wrap = carousel.closest(".machinery-carousel-wrap");
+  const prev = wrap?.querySelector(".machinery-carousel-btn.prev");
+  const next = wrap?.querySelector(".machinery-carousel-btn.next");
+
+  let paused = false;
+  let lastTime = null;
+  let resumeTimer = null;
+
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+  const pixelsPerSecond = isMobile ? 34 : 46;
+
+  const getLoopPoint = () => carousel.scrollWidth / 2;
+
+  const normalize = () => {
+    const loopPoint = getLoopPoint();
+    if (loopPoint > carousel.clientWidth && carousel.scrollLeft >= loopPoint) {
+      carousel.scrollLeft = carousel.scrollLeft - loopPoint;
+    }
+  };
+
+  const pauseTemporarily = (duration = 1600) => {
+    paused = true;
+    clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(() => {
+      paused = false;
+      lastTime = null;
+    }, duration);
+  };
+
+  const animate = (time) => {
+    if (lastTime === null) lastTime = time;
+    const delta = time - lastTime;
+    lastTime = time;
+
+    if (!paused) {
+      carousel.scrollLeft += (delta / 1000) * pixelsPerSecond;
+      normalize();
+    }
+
+    requestAnimationFrame(animate);
+  };
+
+  prev?.addEventListener("click", () => {
+    pauseTemporarily(1200);
+    const amount = Math.min(640, carousel.clientWidth * 0.85);
+    carousel.scrollBy({ left: -amount, behavior: "smooth" });
+  });
+
+  next?.addEventListener("click", () => {
+    pauseTemporarily(1200);
+    const amount = Math.min(640, carousel.clientWidth * 0.85);
+    carousel.scrollBy({ left: amount, behavior: "smooth" });
+  });
+
+  carousel.addEventListener("mouseenter", () => {
+    paused = true;
+  });
+
+  carousel.addEventListener("mouseleave", () => {
+    paused = false;
+    lastTime = null;
+  });
+
+  carousel.addEventListener("touchstart", () => pauseTemporarily(2200), { passive: true });
+  carousel.addEventListener("touchend", () => pauseTemporarily(1000), { passive: true });
+  carousel.addEventListener("wheel", () => pauseTemporarily(1400), { passive: true });
+
+  requestAnimationFrame(animate);
+});
+// Machinery carousel stable infinite auto-loop END
