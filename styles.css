@@ -834,6 +834,14 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
   overflow: hidden;
 }
 
+.quality-documents-section {
+  padding-bottom: 44px;
+}
+
+.quality-documents-section + .certificates-section {
+  padding-top: 44px;
+}
+
 .certificate-carousel {
   width: min(1180px, 100%);
   margin: 0 auto;
