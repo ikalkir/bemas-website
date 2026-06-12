@@ -907,3 +907,98 @@ document.addEventListener("DOMContentLoaded", () => {
   requestAnimationFrame(animate);
 });
 // Machinery carousel stable infinite auto-loop END
+
+
+// Gallery carousel autoplay watchdog
+document.addEventListener("DOMContentLoaded", () => {
+  const galleries = [
+    { selector: "[data-materials-carousel]", cardClass: "materials-carousel-card" },
+    { selector: "[data-izmir-carousel]", cardClass: "izmir-carousel-card" },
+    { selector: "[data-urla-carousel]", cardClass: "urla-carousel-card" },
+    { selector: "[data-machinery-carousel]", cardClass: "machinery-carousel-card" },
+  ];
+
+  galleries.forEach(({ selector, cardClass }) => {
+    const carousel = document.querySelector(selector);
+    if (!carousel || carousel.dataset.autoplayWatchdogReady === "true") return;
+
+    carousel.dataset.autoplayWatchdogReady = "true";
+
+    const ensureLoopCards = () => {
+      const originals = Array.from(carousel.children).filter(
+        (item) => item.classList.contains(cardClass) && item.getAttribute("aria-hidden") !== "true"
+      );
+      const clones = Array.from(carousel.children).filter(
+        (item) => item.classList.contains(cardClass) && item.getAttribute("aria-hidden") === "true"
+      );
+
+      if (originals.length < 2 || clones.length >= originals.length) return;
+
+      originals.forEach((card) => {
+        const clone = card.cloneNode(true);
+        clone.setAttribute("aria-hidden", "true");
+        carousel.appendChild(clone);
+      });
+    };
+
+    const startFallbackAutoplay = () => {
+      if (carousel.dataset.autoplayFallbackRunning === "true") return;
+
+      ensureLoopCards();
+      carousel.dataset.autoplayFallbackRunning = "true";
+
+      let paused = false;
+      let lastTime = performance.now();
+      let resumeTimer = null;
+
+      const pixelsPerSecond = () => (window.matchMedia("(max-width: 768px)").matches ? 34 : 46);
+      const getLoopPoint = () => carousel.scrollWidth / 2;
+      const normalize = () => {
+        const loopPoint = getLoopPoint();
+        if (loopPoint > carousel.clientWidth && carousel.scrollLeft >= loopPoint) {
+          carousel.scrollLeft -= loopPoint;
+        }
+      };
+      const pauseTemporarily = (duration = 1600) => {
+        paused = true;
+        clearTimeout(resumeTimer);
+        resumeTimer = setTimeout(() => {
+          paused = false;
+          lastTime = performance.now();
+        }, duration);
+      };
+
+      window.setInterval(() => {
+        const now = performance.now();
+        const delta = now - lastTime;
+        lastTime = now;
+
+        if (!paused) {
+          carousel.scrollLeft += (delta / 1000) * pixelsPerSecond();
+          normalize();
+        }
+      }, 32);
+
+      carousel.addEventListener("mouseenter", () => {
+        paused = true;
+      });
+      carousel.addEventListener("mouseleave", () => {
+        paused = false;
+        lastTime = performance.now();
+      });
+      carousel.addEventListener("touchstart", () => pauseTemporarily(2200), { passive: true });
+      carousel.addEventListener("touchend", () => pauseTemporarily(1000), { passive: true });
+      carousel.addEventListener("wheel", () => pauseTemporarily(1400), { passive: true });
+    };
+
+    window.setTimeout(() => {
+      const initialScrollLeft = carousel.scrollLeft;
+
+      window.setTimeout(() => {
+        if (carousel.scrollLeft <= initialScrollLeft + 1) {
+          startFallbackAutoplay();
+        }
+      }, 900);
+    }, 300);
+  });
+});
