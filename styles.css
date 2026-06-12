@@ -2497,3 +2497,33 @@ button.button-primary[type="submit"]:hover {
     transform: translateX(-50%);
   }
 }
+
+/* Disable broken marquee and restore manual Urla carousel */
+.urla-carousel {
+  animation: none !important;
+  transform: none !important;
+  width: auto !important;
+  max-width: 100% !important;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: x mandatory !important;
+  scroll-behavior: smooth !important;
+}
+
+.urla-carousel-wrap {
+  overflow: hidden !important;
+}
+
+.urla-carousel-card {
+  flex: 0 0 min(620px, 82vw) !important;
+  width: min(620px, 82vw) !important;
+}
+
+@media (max-width: 768px) {
+  .urla-carousel-card {
+    flex: 0 0 86vw !important;
+    width: 86vw !important;
+  }
+}
