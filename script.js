@@ -202,6 +202,155 @@ function setupCounters() {
   counterItems.forEach((counter) => counterObserver.observe(counter));
 }
 
+function markCloneInactive(clone, cloneDatasetName) {
+  clone.dataset[cloneDatasetName] = "true";
+  clone.setAttribute("aria-hidden", "true");
+  clone.querySelectorAll("a, button, input, select, textarea, [tabindex]").forEach((item) => {
+    item.setAttribute("tabindex", "-1");
+  });
+}
+
+function setupLoopingCarousel({
+  scrollElement,
+  track,
+  originalItems,
+  cloneDatasetName,
+  readyDatasetName,
+  prevButton,
+  nextButton,
+  mobileSpeed = 36,
+  desktopSpeed = 48,
+}) {
+  if (!scrollElement || !track || scrollElement.dataset[readyDatasetName] === "true" || originalItems.length < 2) {
+    return;
+  }
+
+  scrollElement.dataset[readyDatasetName] = "true";
+
+  const originals = originalItems.filter((item) => item.dataset[cloneDatasetName] !== "true");
+  const clones = document.createDocumentFragment();
+
+  originals.forEach((item) => {
+    const clone = item.cloneNode(true);
+    markCloneInactive(clone, cloneDatasetName);
+    clones.appendChild(clone);
+  });
+  track.appendChild(clones);
+
+  let loopDistance = 0;
+  let pendingPixels = 0;
+  let lastTickTime = performance.now();
+  let pointerInside = false;
+  let hasFocus = false;
+  let pausedUntil = 0;
+
+  const pixelsPerSecond = () => (window.matchMedia("(max-width: 768px)").matches ? mobileSpeed : desktopSpeed);
+
+  const writeScrollLeft = (value) => {
+    scrollElement.scrollLeft = value;
+
+    if (Math.abs(scrollElement.scrollLeft - value) > 0.5 && typeof scrollElement.scrollTo === "function") {
+      scrollElement.scrollTo(value, 0);
+    }
+  };
+
+  const normalizeScrollPosition = () => {
+    if (!loopDistance) {
+      return;
+    }
+
+    if (scrollElement.scrollLeft >= loopDistance) {
+      writeScrollLeft(scrollElement.scrollLeft - loopDistance);
+    } else if (scrollElement.scrollLeft < 0) {
+      writeScrollLeft(loopDistance + scrollElement.scrollLeft);
+    }
+  };
+
+  const updateCarouselMetrics = () => {
+    const styles = window.getComputedStyle(track);
+    const gap = Number.parseFloat(styles.columnGap || styles.gap || "0") || 0;
+    const distance = originals.reduce((total, item) => total + item.getBoundingClientRect().width, 0) + gap * originals.length;
+    const duration = Math.max(36, Math.round(distance / Math.max(desktopSpeed, 1)));
+
+    loopDistance = Math.max(distance, 1);
+    track.style.setProperty("--certificate-scroll-distance", `${loopDistance}px`);
+    track.style.setProperty("--certificate-scroll-duration", `${duration}s`);
+    normalizeScrollPosition();
+  };
+
+  const pauseTemporarily = (duration = 1300) => {
+    pausedUntil = performance.now() + duration;
+    pendingPixels = 0;
+    lastTickTime = performance.now();
+  };
+
+  const isPaused = () => pointerInside || hasFocus || performance.now() < pausedUntil || document.hidden || reducedMotionQuery.matches;
+
+  const step = () => {
+    const now = performance.now();
+    const elapsed = Math.min(now - lastTickTime, 160);
+    lastTickTime = now;
+
+    if (!isPaused() && loopDistance > scrollElement.clientWidth) {
+      pendingPixels += (elapsed / 1000) * pixelsPerSecond();
+
+      const wholePixels = Math.trunc(pendingPixels);
+      if (wholePixels >= 1) {
+        pendingPixels -= wholePixels;
+        writeScrollLeft(scrollElement.scrollLeft + wholePixels);
+        normalizeScrollPosition();
+      }
+    }
+  };
+
+  const scrollByAmount = (direction) => {
+    pauseTemporarily(900);
+    const amount = Math.min(640, scrollElement.clientWidth * 0.85);
+
+    if (direction < 0 && scrollElement.scrollLeft < amount) {
+      writeScrollLeft(scrollElement.scrollLeft + loopDistance);
+    }
+
+    scrollElement.scrollBy({ left: direction * amount, behavior: "smooth" });
+    window.setTimeout(normalizeScrollPosition, 760);
+  };
+
+  requestAnimationFrame(updateCarouselMetrics);
+  window.setTimeout(updateCarouselMetrics, 400);
+  window.setTimeout(updateCarouselMetrics, 1200);
+  window.addEventListener("resize", updateCarouselMetrics, { passive: true });
+  window.addEventListener("orientationchange", () => {
+    window.setTimeout(updateCarouselMetrics, 240);
+  });
+  document.addEventListener("visibilitychange", () => {
+    lastTickTime = performance.now();
+  });
+
+  scrollElement.addEventListener("pointerenter", () => {
+    pointerInside = true;
+  });
+  scrollElement.addEventListener("pointerleave", () => {
+    pointerInside = false;
+    lastTickTime = performance.now();
+  });
+  scrollElement.addEventListener("focusin", () => {
+    hasFocus = true;
+  });
+  scrollElement.addEventListener("focusout", () => {
+    hasFocus = false;
+    lastTickTime = performance.now();
+  });
+  scrollElement.addEventListener("touchstart", () => pauseTemporarily(1400), { passive: true });
+  scrollElement.addEventListener("touchend", () => pauseTemporarily(700), { passive: true });
+  scrollElement.addEventListener("wheel", () => pauseTemporarily(1000), { passive: true });
+  scrollElement.addEventListener("keydown", () => pauseTemporarily(1000));
+
+  prevButton?.addEventListener("click", () => scrollByAmount(-1));
+  nextButton?.addEventListener("click", () => scrollByAmount(1));
+
+  window.setInterval(step, 32);
+}
+
 function setupCertificateCarousels() {
   if (!certificateTracks.length) {
     return;
@@ -230,97 +379,49 @@ function setupCertificateCarousels() {
       })
       .forEach((card) => track.appendChild(card));
 
-    if (!carousel || reducedMotionQuery.matches) {
-      track.dataset.carouselReady = "true";
-      track.classList.add("is-certificate-carousel");
-      return;
-    }
-
-    const clones = document.createDocumentFragment();
-
-    originalCards.forEach((card) => {
-      const clone = card.cloneNode(true);
-
-      clone.dataset.certificateClone = "true";
-      clone.setAttribute("aria-hidden", "true");
-      clone.querySelectorAll("a, button, input, select, textarea, [tabindex]").forEach((item) => {
-        item.setAttribute("tabindex", "-1");
-      });
-      clones.appendChild(clone);
-    });
-
-    track.appendChild(clones);
     track.dataset.carouselReady = "true";
     track.classList.add("is-certificate-carousel");
 
-    let scrollDistance = 0;
-    let lastFrameTime = 0;
-    let pointerInside = false;
-    let hasFocus = false;
-    let pausedUntil = 0;
-
-    const updateCarouselMetrics = () => {
-      const styles = window.getComputedStyle(track);
-      const gap = Number.parseFloat(styles.columnGap || styles.gap || "0") || 0;
-      const distance = originalCards.reduce((total, card) => total + card.getBoundingClientRect().width, 0) + gap * originalCards.length;
-      const duration = Math.max(36, Math.round(distance / 42));
-
-      scrollDistance = Math.max(distance, 1);
-      track.style.setProperty("--certificate-scroll-distance", `${Math.max(distance, 1)}px`);
-      track.style.setProperty("--certificate-scroll-duration", `${duration}s`);
-    };
-
-    const pauseBriefly = () => {
-      pausedUntil = performance.now() + 2600;
-    };
-
-    const isPaused = () => pointerInside || hasFocus || performance.now() < pausedUntil || document.hidden;
-
-    const normalizeScrollPosition = () => {
-      if (!scrollDistance) {
-        return;
-      }
-
-      if (carousel.scrollLeft >= scrollDistance) {
-        carousel.scrollLeft -= scrollDistance;
-      }
-    };
-
-    const tick = (now) => {
-      if (!lastFrameTime) {
-        lastFrameTime = now;
-      }
-
-      const elapsed = Math.min(now - lastFrameTime, 80);
-      lastFrameTime = now;
-
-      if (!isPaused() && scrollDistance > 0) {
-        carousel.scrollLeft += elapsed * 0.042;
-        normalizeScrollPosition();
-      }
-
-      requestAnimationFrame(tick);
-    };
-
-    requestAnimationFrame(updateCarouselMetrics);
-    window.addEventListener("resize", updateCarouselMetrics, { passive: true });
-    carousel.addEventListener("pointerenter", () => {
-      pointerInside = true;
+    setupLoopingCarousel({
+      scrollElement: carousel,
+      track,
+      originalItems: originalCards,
+      cloneDatasetName: "certificateClone",
+      readyDatasetName: "certificateLoopReady",
+      mobileSpeed: 34,
+      desktopSpeed: 42,
     });
-    carousel.addEventListener("pointerleave", () => {
-      pointerInside = false;
+  });
+}
+
+function setupGalleryCarousels() {
+  [
+    { selector: "[data-materials-carousel]", cardClass: "materials-carousel-card", buttonPrefix: "materials" },
+    { selector: "[data-izmir-carousel]", cardClass: "izmir-carousel-card", buttonPrefix: "izmir" },
+    { selector: "[data-urla-carousel]", cardClass: "urla-carousel-card", buttonPrefix: "urla" },
+    { selector: "[data-machinery-carousel]", cardClass: "machinery-carousel-card", buttonPrefix: "machinery" },
+  ].forEach(({ selector, cardClass, buttonPrefix }) => {
+    const carousel = document.querySelector(selector);
+    if (!carousel) {
+      return;
+    }
+
+    const wrap = carousel.closest(`.${buttonPrefix}-carousel-wrap`);
+    const originalCards = Array.from(carousel.children).filter(
+      (item) => item.classList.contains(cardClass) && item.dataset.galleryClone !== "true",
+    );
+
+    setupLoopingCarousel({
+      scrollElement: carousel,
+      track: carousel,
+      originalItems: originalCards,
+      cloneDatasetName: "galleryClone",
+      readyDatasetName: "galleryLoopReady",
+      prevButton: wrap?.querySelector(`.${buttonPrefix}-carousel-btn.prev`),
+      nextButton: wrap?.querySelector(`.${buttonPrefix}-carousel-btn.next`),
+      mobileSpeed: 38,
+      desktopSpeed: 52,
     });
-    carousel.addEventListener("focusin", () => {
-      hasFocus = true;
-    });
-    carousel.addEventListener("focusout", () => {
-      hasFocus = false;
-    });
-    carousel.addEventListener("pointerdown", pauseBriefly, { passive: true });
-    carousel.addEventListener("touchstart", pauseBriefly, { passive: true });
-    carousel.addEventListener("wheel", pauseBriefly, { passive: true });
-    carousel.addEventListener("keydown", pauseBriefly);
-    requestAnimationFrame(tick);
   });
 }
 
@@ -395,6 +496,7 @@ async function detectVisitorLanguage() {
 }
 
 setupCertificateCarousels();
+setupGalleryCarousels();
 setupScrollAnimations();
 setupCounters();
 
@@ -462,543 +564,3 @@ if (contactForm && formStatus) {
     window.location.href = buildContactMailto(formData);
   });
 }
-
-
-
-
-// Urla carousel stable infinite auto-loop
-document.addEventListener("DOMContentLoaded", () => {
-  const carousel = document.querySelector("[data-urla-carousel]");
-  if (!carousel || carousel.dataset.loopReady === "true") return;
-
-  carousel.dataset.loopReady = "true";
-
-  const originalCards = Array.from(carousel.children).filter((item) =>
-    item.classList.contains("urla-carousel-card")
-  );
-
-  if (originalCards.length < 2) return;
-
-  originalCards.forEach((card) => {
-    const clone = card.cloneNode(true);
-    clone.setAttribute("aria-hidden", "true");
-    carousel.appendChild(clone);
-  });
-
-  const prev = document.querySelector(".urla-carousel-btn.prev");
-  const next = document.querySelector(".urla-carousel-btn.next");
-
-  let paused = false;
-  let resumeTimer = null;
-  const isMobile = window.matchMedia("(max-width: 768px)").matches;
-  const speed = isMobile ? 0.35 : 0.55;
-
-  const getLoopPoint = () => carousel.scrollWidth / 2;
-
-  const normalizeScroll = () => {
-    const loopPoint = getLoopPoint();
-
-    if (carousel.scrollLeft >= loopPoint) {
-      carousel.scrollLeft = carousel.scrollLeft - loopPoint;
-    }
-
-    if (carousel.scrollLeft < 0) {
-      carousel.scrollLeft = loopPoint + carousel.scrollLeft;
-    }
-  };
-
-  const pauseTemporarily = (delay = 1400) => {
-    paused = true;
-    clearTimeout(resumeTimer);
-    resumeTimer = setTimeout(() => {
-      paused = false;
-    }, delay);
-  };
-
-  const tick = () => {
-    if (!paused) {
-      carousel.scrollLeft += speed;
-      normalizeScroll();
-    }
-
-    requestAnimationFrame(tick);
-  };
-
-  prev?.addEventListener("click", () => {
-    pauseTemporarily(1200);
-    const loopPoint = getLoopPoint();
-    const amount = Math.min(640, carousel.clientWidth * 0.85);
-
-    if (carousel.scrollLeft < amount) {
-      carousel.scrollLeft += loopPoint;
-    }
-
-    carousel.scrollBy({ left: -amount, behavior: "smooth" });
-
-    setTimeout(normalizeScroll, 900);
-  });
-
-  next?.addEventListener("click", () => {
-    pauseTemporarily(1200);
-    const amount = Math.min(640, carousel.clientWidth * 0.85);
-
-    carousel.scrollBy({ left: amount, behavior: "smooth" });
-
-    setTimeout(normalizeScroll, 900);
-  });
-
-  carousel.addEventListener("mouseenter", () => {
-    paused = true;
-  });
-
-  carousel.addEventListener("mouseleave", () => {
-    paused = false;
-  });
-
-  carousel.addEventListener("touchstart", () => {
-    pauseTemporarily(2200);
-  }, { passive: true });
-
-  carousel.addEventListener("touchend", () => {
-    pauseTemporarily(1200);
-  }, { passive: true });
-
-  carousel.addEventListener("wheel", () => {
-    pauseTemporarily(1200);
-  }, { passive: true });
-
-  requestAnimationFrame(tick);
-});
-
-
-// Urla carousel autoplay force patch
-document.addEventListener("DOMContentLoaded", () => {
-  const carousel = document.querySelector("[data-urla-carousel]");
-  if (!carousel || carousel.dataset.autoplayForceReady === "true") return;
-
-  carousel.dataset.autoplayForceReady = "true";
-
-  let paused = false;
-  let lastTime = null;
-  let resumeTimer = null;
-
-  const isMobile = window.matchMedia("(max-width: 768px)").matches;
-  const pixelsPerSecond = isMobile ? 34 : 46;
-
-  const getLoopPoint = () => carousel.scrollWidth / 2;
-
-  const normalize = () => {
-    const loopPoint = getLoopPoint();
-    if (loopPoint > carousel.clientWidth && carousel.scrollLeft >= loopPoint) {
-      carousel.scrollLeft = carousel.scrollLeft - loopPoint;
-    }
-  };
-
-  const pauseTemporarily = (duration = 1600) => {
-    paused = true;
-    clearTimeout(resumeTimer);
-    resumeTimer = setTimeout(() => {
-      paused = false;
-      lastTime = null;
-    }, duration);
-  };
-
-  const animate = (time) => {
-    if (lastTime === null) lastTime = time;
-    const delta = time - lastTime;
-    lastTime = time;
-
-    if (!paused) {
-      carousel.scrollLeft += (delta / 1000) * pixelsPerSecond;
-      normalize();
-    }
-
-    requestAnimationFrame(animate);
-  };
-
-  carousel.addEventListener("mouseenter", () => {
-    paused = true;
-  });
-
-  carousel.addEventListener("mouseleave", () => {
-    paused = false;
-    lastTime = null;
-  });
-
-  carousel.addEventListener("touchstart", () => pauseTemporarily(2200), { passive: true });
-  carousel.addEventListener("touchend", () => pauseTemporarily(1000), { passive: true });
-  carousel.addEventListener("wheel", () => pauseTemporarily(1400), { passive: true });
-
-  requestAnimationFrame(animate);
-});
-// End Urla carousel autoplay force patch
-
-
-// İzmir carousel stable infinite auto-loop START
-document.addEventListener("DOMContentLoaded", () => {
-  const carousel = document.querySelector("[data-izmir-carousel]");
-  if (!carousel || carousel.dataset.izmirLoopReady === "true") return;
-
-  carousel.dataset.izmirLoopReady = "true";
-
-  const originalCards = Array.from(carousel.children).filter((item) =>
-    item.classList.contains("izmir-carousel-card")
-  );
-
-  if (originalCards.length < 2) return;
-
-  originalCards.forEach((card) => {
-    const clone = card.cloneNode(true);
-    clone.setAttribute("aria-hidden", "true");
-    carousel.appendChild(clone);
-  });
-
-  const wrap = carousel.closest(".izmir-carousel-wrap");
-  const prev = wrap?.querySelector(".izmir-carousel-btn.prev");
-  const next = wrap?.querySelector(".izmir-carousel-btn.next");
-
-  let paused = false;
-  let lastTime = null;
-  let resumeTimer = null;
-
-  const isMobile = window.matchMedia("(max-width: 768px)").matches;
-  const pixelsPerSecond = isMobile ? 34 : 46;
-
-  const getLoopPoint = () => carousel.scrollWidth / 2;
-
-  const normalize = () => {
-    const loopPoint = getLoopPoint();
-    if (loopPoint > carousel.clientWidth && carousel.scrollLeft >= loopPoint) {
-      carousel.scrollLeft = carousel.scrollLeft - loopPoint;
-    }
-  };
-
-  const pauseTemporarily = (duration = 1600) => {
-    paused = true;
-    clearTimeout(resumeTimer);
-    resumeTimer = setTimeout(() => {
-      paused = false;
-      lastTime = null;
-    }, duration);
-  };
-
-  const animate = (time) => {
-    if (lastTime === null) lastTime = time;
-    const delta = time - lastTime;
-    lastTime = time;
-
-    if (!paused) {
-      carousel.scrollLeft += (delta / 1000) * pixelsPerSecond;
-      normalize();
-    }
-
-    requestAnimationFrame(animate);
-  };
-
-  prev?.addEventListener("click", () => {
-    pauseTemporarily(1200);
-    const amount = Math.min(640, carousel.clientWidth * 0.85);
-    carousel.scrollBy({ left: -amount, behavior: "smooth" });
-  });
-
-  next?.addEventListener("click", () => {
-    pauseTemporarily(1200);
-    const amount = Math.min(640, carousel.clientWidth * 0.85);
-    carousel.scrollBy({ left: amount, behavior: "smooth" });
-  });
-
-  carousel.addEventListener("mouseenter", () => {
-    paused = true;
-  });
-
-  carousel.addEventListener("mouseleave", () => {
-    paused = false;
-    lastTime = null;
-  });
-
-  carousel.addEventListener("touchstart", () => pauseTemporarily(2200), { passive: true });
-  carousel.addEventListener("touchend", () => pauseTemporarily(1000), { passive: true });
-  carousel.addEventListener("wheel", () => pauseTemporarily(1400), { passive: true });
-
-  requestAnimationFrame(animate);
-});
-// İzmir carousel stable infinite auto-loop END
-
-
-
-// Materials carousel stable infinite auto-loop START
-document.addEventListener("DOMContentLoaded", () => {
-  const carousel = document.querySelector("[data-materials-carousel]");
-  if (!carousel || carousel.dataset.materialsLoopReady === "true") return;
-
-  carousel.dataset.materialsLoopReady = "true";
-
-  const originalCards = Array.from(carousel.children).filter((item) =>
-    item.classList.contains("materials-carousel-card")
-  );
-
-  if (originalCards.length < 2) return;
-
-  originalCards.forEach((card) => {
-    const clone = card.cloneNode(true);
-    clone.setAttribute("aria-hidden", "true");
-    carousel.appendChild(clone);
-  });
-
-  const wrap = carousel.closest(".materials-carousel-wrap");
-  const prev = wrap?.querySelector(".materials-carousel-btn.prev");
-  const next = wrap?.querySelector(".materials-carousel-btn.next");
-
-  let paused = false;
-  let lastTime = null;
-  let resumeTimer = null;
-
-  const isMobile = window.matchMedia("(max-width: 768px)").matches;
-  const pixelsPerSecond = isMobile ? 34 : 46;
-
-  const getLoopPoint = () => carousel.scrollWidth / 2;
-
-  const normalize = () => {
-    const loopPoint = getLoopPoint();
-    if (loopPoint > carousel.clientWidth && carousel.scrollLeft >= loopPoint) {
-      carousel.scrollLeft = carousel.scrollLeft - loopPoint;
-    }
-  };
-
-  const pauseTemporarily = (duration = 1600) => {
-    paused = true;
-    clearTimeout(resumeTimer);
-    resumeTimer = setTimeout(() => {
-      paused = false;
-      lastTime = null;
-    }, duration);
-  };
-
-  const animate = (time) => {
-    if (lastTime === null) lastTime = time;
-    const delta = time - lastTime;
-    lastTime = time;
-
-    if (!paused) {
-      carousel.scrollLeft += (delta / 1000) * pixelsPerSecond;
-      normalize();
-    }
-
-    requestAnimationFrame(animate);
-  };
-
-  prev?.addEventListener("click", () => {
-    pauseTemporarily(1200);
-    const amount = Math.min(640, carousel.clientWidth * 0.85);
-    carousel.scrollBy({ left: -amount, behavior: "smooth" });
-  });
-
-  next?.addEventListener("click", () => {
-    pauseTemporarily(1200);
-    const amount = Math.min(640, carousel.clientWidth * 0.85);
-    carousel.scrollBy({ left: amount, behavior: "smooth" });
-  });
-
-  carousel.addEventListener("mouseenter", () => {
-    paused = true;
-  });
-
-  carousel.addEventListener("mouseleave", () => {
-    paused = false;
-    lastTime = null;
-  });
-
-  carousel.addEventListener("touchstart", () => pauseTemporarily(2200), { passive: true });
-  carousel.addEventListener("touchend", () => pauseTemporarily(1000), { passive: true });
-  carousel.addEventListener("wheel", () => pauseTemporarily(1400), { passive: true });
-
-  requestAnimationFrame(animate);
-});
-// Materials carousel stable infinite auto-loop END
-
-
-
-// Machinery carousel stable infinite auto-loop START
-document.addEventListener("DOMContentLoaded", () => {
-  const carousel = document.querySelector("[data-machinery-carousel]");
-  if (!carousel || carousel.dataset.machineryLoopReady === "true") return;
-
-  carousel.dataset.machineryLoopReady = "true";
-
-  const originalCards = Array.from(carousel.children).filter((item) =>
-    item.classList.contains("machinery-carousel-card")
-  );
-
-  if (originalCards.length < 2) return;
-
-  originalCards.forEach((card) => {
-    const clone = card.cloneNode(true);
-    clone.setAttribute("aria-hidden", "true");
-    carousel.appendChild(clone);
-  });
-
-  const wrap = carousel.closest(".machinery-carousel-wrap");
-  const prev = wrap?.querySelector(".machinery-carousel-btn.prev");
-  const next = wrap?.querySelector(".machinery-carousel-btn.next");
-
-  let paused = false;
-  let lastTime = null;
-  let resumeTimer = null;
-
-  const isMobile = window.matchMedia("(max-width: 768px)").matches;
-  const pixelsPerSecond = isMobile ? 34 : 46;
-
-  const getLoopPoint = () => carousel.scrollWidth / 2;
-
-  const normalize = () => {
-    const loopPoint = getLoopPoint();
-    if (loopPoint > carousel.clientWidth && carousel.scrollLeft >= loopPoint) {
-      carousel.scrollLeft = carousel.scrollLeft - loopPoint;
-    }
-  };
-
-  const pauseTemporarily = (duration = 1600) => {
-    paused = true;
-    clearTimeout(resumeTimer);
-    resumeTimer = setTimeout(() => {
-      paused = false;
-      lastTime = null;
-    }, duration);
-  };
-
-  const animate = (time) => {
-    if (lastTime === null) lastTime = time;
-    const delta = time - lastTime;
-    lastTime = time;
-
-    if (!paused) {
-      carousel.scrollLeft += (delta / 1000) * pixelsPerSecond;
-      normalize();
-    }
-
-    requestAnimationFrame(animate);
-  };
-
-  prev?.addEventListener("click", () => {
-    pauseTemporarily(1200);
-    const amount = Math.min(640, carousel.clientWidth * 0.85);
-    carousel.scrollBy({ left: -amount, behavior: "smooth" });
-  });
-
-  next?.addEventListener("click", () => {
-    pauseTemporarily(1200);
-    const amount = Math.min(640, carousel.clientWidth * 0.85);
-    carousel.scrollBy({ left: amount, behavior: "smooth" });
-  });
-
-  carousel.addEventListener("mouseenter", () => {
-    paused = true;
-  });
-
-  carousel.addEventListener("mouseleave", () => {
-    paused = false;
-    lastTime = null;
-  });
-
-  carousel.addEventListener("touchstart", () => pauseTemporarily(2200), { passive: true });
-  carousel.addEventListener("touchend", () => pauseTemporarily(1000), { passive: true });
-  carousel.addEventListener("wheel", () => pauseTemporarily(1400), { passive: true });
-
-  requestAnimationFrame(animate);
-});
-// Machinery carousel stable infinite auto-loop END
-
-
-// Gallery carousel autoplay watchdog
-document.addEventListener("DOMContentLoaded", () => {
-  const galleries = [
-    { selector: "[data-materials-carousel]", cardClass: "materials-carousel-card" },
-    { selector: "[data-izmir-carousel]", cardClass: "izmir-carousel-card" },
-    { selector: "[data-urla-carousel]", cardClass: "urla-carousel-card" },
-    { selector: "[data-machinery-carousel]", cardClass: "machinery-carousel-card" },
-  ];
-
-  galleries.forEach(({ selector, cardClass }) => {
-    const carousel = document.querySelector(selector);
-    if (!carousel || carousel.dataset.autoplayWatchdogReady === "true") return;
-
-    carousel.dataset.autoplayWatchdogReady = "true";
-
-    const ensureLoopCards = () => {
-      const originals = Array.from(carousel.children).filter(
-        (item) => item.classList.contains(cardClass) && item.getAttribute("aria-hidden") !== "true"
-      );
-      const clones = Array.from(carousel.children).filter(
-        (item) => item.classList.contains(cardClass) && item.getAttribute("aria-hidden") === "true"
-      );
-
-      if (originals.length < 2 || clones.length >= originals.length) return;
-
-      originals.forEach((card) => {
-        const clone = card.cloneNode(true);
-        clone.setAttribute("aria-hidden", "true");
-        carousel.appendChild(clone);
-      });
-    };
-
-    const startFallbackAutoplay = () => {
-      if (carousel.dataset.autoplayFallbackRunning === "true") return;
-
-      ensureLoopCards();
-      carousel.dataset.autoplayFallbackRunning = "true";
-
-      let paused = false;
-      let lastTime = performance.now();
-      let resumeTimer = null;
-
-      const pixelsPerSecond = () => (window.matchMedia("(max-width: 768px)").matches ? 34 : 46);
-      const getLoopPoint = () => carousel.scrollWidth / 2;
-      const normalize = () => {
-        const loopPoint = getLoopPoint();
-        if (loopPoint > carousel.clientWidth && carousel.scrollLeft >= loopPoint) {
-          carousel.scrollLeft -= loopPoint;
-        }
-      };
-      const pauseTemporarily = (duration = 1600) => {
-        paused = true;
-        clearTimeout(resumeTimer);
-        resumeTimer = setTimeout(() => {
-          paused = false;
-          lastTime = performance.now();
-        }, duration);
-      };
-
-      window.setInterval(() => {
-        const now = performance.now();
-        const delta = now - lastTime;
-        lastTime = now;
-
-        if (!paused) {
-          carousel.scrollLeft += (delta / 1000) * pixelsPerSecond();
-          normalize();
-        }
-      }, 32);
-
-      carousel.addEventListener("mouseenter", () => {
-        paused = true;
-      });
-      carousel.addEventListener("mouseleave", () => {
-        paused = false;
-        lastTime = performance.now();
-      });
-      carousel.addEventListener("touchstart", () => pauseTemporarily(2200), { passive: true });
-      carousel.addEventListener("touchend", () => pauseTemporarily(1000), { passive: true });
-      carousel.addEventListener("wheel", () => pauseTemporarily(1400), { passive: true });
-    };
-
-    window.setTimeout(() => {
-      const initialScrollLeft = carousel.scrollLeft;
-
-      window.setTimeout(() => {
-        if (carousel.scrollLeft <= initialScrollLeft + 1) {
-          startFallbackAutoplay();
-        }
-      }, 900);
-    }, 300);
-  });
-});
