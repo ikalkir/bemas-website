@@ -5,6 +5,7 @@
       "source": "/(.*)",
       "destination": "https://bemasagrega.com/$1",
       "statusCode": 301,
+      "preserveQueryParams": true,
       "has": [
         {
           "type": "host",
@@ -16,12 +17,43 @@
       "source": "/(.*)",
       "destination": "https://bemasagrega.com/$1",
       "statusCode": 301,
+      "preserveQueryParams": true,
       "has": [
         {
           "type": "host",
           "value": "www.bemasmining.com"
         }
       ]
+    },
+    {
+      "source": "/index.html",
+      "destination": "https://bemasagrega.com/",
+      "statusCode": 301,
+      "preserveQueryParams": true,
+      "has": [
+        {
+          "type": "host",
+          "value": "www.bemasagrega.com"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "destination": "https://bemasagrega.com/$1",
+      "statusCode": 301,
+      "preserveQueryParams": true,
+      "has": [
+        {
+          "type": "host",
+          "value": "www.bemasagrega.com"
+        }
+      ]
+    },
+    {
+      "source": "/index.html",
+      "destination": "https://bemasagrega.com/",
+      "statusCode": 301,
+      "preserveQueryParams": true
     }
   ]
 }

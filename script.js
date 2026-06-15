@@ -80,6 +80,10 @@ function redirectToLanguage(language) {
   window.location.replace(languageUrl(language).toString());
 }
 
+function isExplicitLanguagePage() {
+  return window.location.pathname.split("/").pop() === "en.html";
+}
+
 function fallbackDetectedLanguage() {
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -525,6 +529,10 @@ languageLinks.forEach((link) => {
   if (requestedLanguage) {
     setStoredLanguage(requestedLanguage);
     redirectToLanguage(requestedLanguage);
+    return;
+  }
+
+  if (isExplicitLanguagePage()) {
     return;
   }
 
