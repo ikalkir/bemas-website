@@ -615,22 +615,35 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
 .site-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
   gap: 22px;
   width: min(1120px, 100%);
   margin: 0 auto;
 }
 
 .site-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.06);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.045)),
+    rgba(255, 255, 255, 0.04);
 }
 
 .site-card img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
   height: auto;
+  object-fit: cover;
 }
 
 .site-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   padding: 28px;
 }
 
@@ -646,35 +659,72 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
   line-height: 1.68;
 }
 
-.spec-list {
+.site-metric-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
-  gap: 1px;
+  gap: 12px;
   margin: 0;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.18);
 }
 
-.spec-list div {
+.capacity-metric-grid,
+.equipment-metric-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.equipment-metric-grid {
+  margin-top: 12px;
+}
+
+.site-metric-card {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
-  padding: 14px 12px;
-  background: rgba(14, 22, 36, 0.76);
+  min-height: 104px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius);
+  background: rgba(14, 22, 36, 0.42);
 }
 
-.spec-list dt {
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 0.76rem;
-  font-weight: 780;
+.site-metric-card dt {
+  order: 2;
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.72rem;
+  font-weight: 820;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
-.spec-list dd {
-  margin: 5px 0 0;
+.site-metric-card dd {
+  display: flex;
+  order: 1;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 7px;
+  margin: 0;
   color: #fff;
-  font-size: 1.3rem;
-  font-weight: 850;
+  font-size: 1.9rem;
+  font-weight: 880;
+  line-height: 1.02;
+  font-variant-numeric: tabular-nums;
+}
+
+.capacity-metric-grid .site-metric-card dd {
+  font-size: 1.62rem;
+}
+
+.site-metric-prefix {
+  flex-basis: 100%;
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 0.74rem;
+  font-weight: 760;
+}
+
+.site-metric-unit {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.78rem;
+  font-weight: 820;
+  text-transform: uppercase;
 }
 
 .map-section {
@@ -1119,6 +1169,7 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
 
 .product-card,
 .site-card,
+.site-metric-card,
 .map-card,
 .urla-gallery-grid figure,
 .process-grid article,
@@ -1155,7 +1206,12 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
   .map-card:hover {
     border-color: rgba(242, 189, 47, 0.42);
     background: rgba(255, 255, 255, 0.09);
-    transform: translateY(-6px);
+    transform: translateY(-3px);
+  }
+
+  .site-metric-card:hover {
+    border-color: rgba(242, 189, 47, 0.3);
+    background: rgba(14, 22, 36, 0.54);
   }
 
   .reference-grid article:hover .reference-logo-frame {
@@ -1164,10 +1220,13 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
 
   .image-panel:hover img,
   .material-image:hover img,
-  .site-card:hover img,
   .urla-gallery-grid figure:hover img,
   .fleet-gallery img:hover {
     transform: scale(1.025);
+  }
+
+  .site-card:hover img {
+    transform: scale(1.012);
   }
 }
 
@@ -1370,8 +1429,8 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
     padding-left: 0;
   }
 
-  .spec-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .site-card img {
+    aspect-ratio: 16 / 8;
   }
 
   .map-heading {
@@ -1458,6 +1517,23 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
 
   .capacity-summary dd {
     font-size: 1.12rem;
+  }
+
+  .site-metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .site-metric-card {
+    min-height: 92px;
+    padding: 16px;
+  }
+
+  .site-metric-card dd {
+    font-size: 1.72rem;
+  }
+
+  .capacity-metric-grid .site-metric-card dd {
+    font-size: 1.46rem;
   }
 
   .product-card,
