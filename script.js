@@ -24,9 +24,9 @@ const menuLabels = {
 
 const formMessages = {
   tr: {
-    email: "destek@bemasagrega.com",
+    email: "info@bemasmining.com",
     subject: "Bemaş web sitesi talep formu",
-    status: "E-posta uygulamanız açılıyor. Talebiniz destek@bemasagrega.com adresine hazırlanıyor.",
+    status: "E-posta uygulamanız açılıyor. Talebiniz info@bemasmining.com adresine hazırlanıyor.",
     fields: {
       name: "Ad Soyad / Firma",
       phone: "Telefon",
@@ -35,9 +35,9 @@ const formMessages = {
     },
   },
   en: {
-    email: "info@bemasagrega.com",
+    email: "info@bemasmining.com",
     subject: "Bemaş website request form",
-    status: "Your email app is opening. The request is being prepared for info@bemasagrega.com.",
+    status: "Your email app is opening. The request is being prepared for info@bemasmining.com.",
     fields: {
       name: "Name / Company",
       phone: "Phone",
