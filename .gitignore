@@ -1,4 +1,14 @@
 .vercel
 
+.env
+.env.*
+!.env.example
+
+.playwright-cli/
+database/
+docs/
+output/
+tmp/
+
 .DS_Store
 **/.DS_Store

@@ -1181,6 +1181,18 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
   box-shadow: var(--shadow);
 }
 
+.contact-form .form-honeypot {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+}
+
 .contact-form label {
   display: grid;
   gap: 8px;
@@ -1217,6 +1229,22 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
 .contact-form button {
   width: fit-content;
   margin-top: 4px;
+}
+
+.contact-form button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.contact-verification {
+  width: 100%;
+  min-height: 65px;
+}
+
+@media (max-width: 420px) {
+  .contact-verification {
+    min-height: 140px;
+  }
 }
 
 .product-card,
@@ -1287,6 +1315,14 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
   margin: 0;
   color: var(--navy);
   font-weight: 750;
+}
+
+.form-status[data-state="success"] {
+  color: #17633b;
+}
+
+.form-status[data-state="error"] {
+  color: #9b1c1c;
 }
 
 .site-footer {

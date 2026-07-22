@@ -1,0 +1,10 @@
+.git/
+.vercel/
+.playwright-cli/
+database/
+docs/
+output/
+tests/
+tmp/
+.env*
+*.log

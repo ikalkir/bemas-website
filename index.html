@@ -38,7 +38,7 @@
       imagesrcset="assets/optimized/showcase/bornova-quarry-hero-operation-800.webp 800w, assets/optimized/showcase/bornova-quarry-hero-operation-1600.webp 1600w"
       imagesizes="(max-width: 500px) calc(100vw - 32px), (max-width: 1080px) min(760px, calc(100vw - 48px)), 660px"
     />
-    <link rel="stylesheet" href="styles.css?v=20260721-analytics-consent-3" />
+    <link rel="stylesheet" href="styles.css?v=20260721-contact-backend-2" />
 
     <meta name="bemas-analytics-id" content="G-EZXXP8FV8T" />
 
@@ -744,42 +744,52 @@
         </div>
         <form
           class="contact-form"
-          action="mailto:info@bemasmining.com"
+          action="/api/contact"
           method="post"
-          enctype="text/plain"
+          enctype="application/x-www-form-urlencoded"
           aria-describedby="contact-form-note"
           data-contact-form
         >
+          <input name="language" type="hidden" value="tr" />
+          <label class="form-honeypot" aria-hidden="true">
+            Web sitesi
+            <input name="website" type="text" autocomplete="off" tabindex="-1" />
+          </label>
           <label>
             Ad Soyad / Firma
-            <input name="name" type="text" autocomplete="organization" required />
+            <input name="name" type="text" autocomplete="organization" minlength="2" maxlength="120" required />
           </label>
           <label>
             Telefon
-            <input name="phone" type="tel" autocomplete="tel" required />
+            <input name="phone" type="tel" autocomplete="tel" minlength="5" maxlength="40" pattern="[0-9+\.\(\) \-]{5,40}" title="Yalnızca rakam, boşluk ve + ( ) . - karakterlerini kullanın." required />
+          </label>
+          <label>
+            E-posta
+            <input name="email" type="email" autocomplete="email" maxlength="254" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" title="Geçerli bir e-posta adresi girin." required />
           </label>
           <label>
             İhtiyaç duyulan ürün
             <select name="product" required>
               <option value="">Seçiniz</option>
-              <option>Mıcır</option>
-              <option>Mıcır Tozu</option>
-              <option>Stabilize</option>
-              <option>Dolgu Malzemesi</option>
-              <option>Anroşman Taşı</option>
-              <option>Diğer agrega talebi</option>
+              <option value="crushed-stone">Mıcır</option>
+              <option value="stone-dust">Mıcır Tozu</option>
+              <option value="stabilized-aggregate">Stabilize</option>
+              <option value="fill-material">Dolgu Malzemesi</option>
+              <option value="riprap-stone">Anroşman Taşı</option>
+              <option value="other-aggregate">Diğer agrega talebi</option>
             </select>
           </label>
           <label>
             Mesaj
-            <textarea name="message" rows="4" placeholder="Proje lokasyonu, yaklaşık tonaj ve teslim tarihi"></textarea>
+            <textarea name="message" rows="4" maxlength="2000" placeholder="Proje lokasyonu, yaklaşık tonaj ve teslim tarihi"></textarea>
           </label>
           <p class="form-note" id="contact-form-note">
-            Bu form talebinizi e-posta uygulamanızda hazırlar; gönderimi uygulamanızdan tamamlamanız gerekir.
-            E-posta uygulaması açılmazsa <a href="mailto:info@bemasmining.com">info@bemasmining.com</a> adresine yazın.
+            Bilgileriniz yalnızca teklif talebinizi yanıtlamak amacıyla doğrudan Bemaş ekibine iletilir.
+            Form çalışmazsa <a href="mailto:info@bemasmining.com">info@bemasmining.com</a> adresine yazın.
           </p>
-          <button class="button button-primary" type="submit">
-            E-posta Taslağı Oluştur
+          <div class="contact-verification" aria-label="Güvenlik doğrulaması" data-turnstile-container></div>
+          <button class="button button-primary" type="submit" data-contact-submit disabled>
+            Talebi Gönder
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
@@ -826,6 +836,6 @@
       </div>
     </footer>
 
-    <script src="script.js?v=20260721-analytics-consent-3"></script>
+    <script src="script.js?v=20260721-contact-backend-2"></script>
   </body>
 </html>

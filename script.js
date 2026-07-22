@@ -73,26 +73,24 @@ const analyticsConsentLabels = {
 
 const formMessages = {
   tr: {
-    email: "info@bemasmining.com",
-    subject: "Bemaş web sitesi talep formu",
-    status: "E-posta uygulamanız açılıyor. Talebiniz info@bemasmining.com adresine hazırlanıyor.",
-    fields: {
-      name: "Ad Soyad / Firma",
-      phone: "Telefon",
-      product: "İhtiyaç duyulan ürün",
-      message: "Mesaj",
-    },
+    verificationLoading: "Güvenlik doğrulaması yükleniyor…",
+    verificationRequired: "Lütfen güvenlik doğrulamasını tamamlayıp tekrar deneyin.",
+    verificationUnavailable: "Güvenlik doğrulaması şu anda yüklenemedi. Lütfen daha sonra tekrar deneyin veya info@bemasmining.com adresine yazın.",
+    sending: "Talebiniz güvenli biçimde gönderiliyor…",
+    success: "Talebiniz Bemaş ekibine ulaştı. En kısa sürede sizinle iletişime geçeceğiz.",
+    invalid: "Lütfen zorunlu alanları kontrol edip tekrar deneyin.",
+    rateLimited: "Kısa sürede çok fazla deneme yapıldı. Lütfen birkaç dakika sonra tekrar deneyin.",
+    unavailable: "Talebiniz şu anda gönderilemedi. Lütfen info@bemasmining.com adresine e-posta gönderin.",
   },
   en: {
-    email: "info@bemasmining.com",
-    subject: "Bemaş website request form",
-    status: "Your email app is opening. The request is being prepared for info@bemasmining.com.",
-    fields: {
-      name: "Name / Company",
-      phone: "Phone",
-      product: "Required product",
-      message: "Message",
-    },
+    verificationLoading: "Security verification is loading…",
+    verificationRequired: "Please complete the security verification and try again.",
+    verificationUnavailable: "Security verification could not load right now. Please try again later or email info@bemasmining.com.",
+    sending: "Your request is being sent securely…",
+    success: "Your request has reached the Bemaş team. We will contact you as soon as possible.",
+    invalid: "Please check the required fields and try again.",
+    rateLimited: "Too many attempts were made in a short time. Please try again in a few minutes.",
+    unavailable: "Your request could not be sent right now. Please email info@bemasmining.com.",
   },
 };
 
@@ -497,23 +495,12 @@ function setupAnalyticsConsent() {
   }
 }
 
-function buildContactMailto(formData) {
-  const messages = formMessages[siteLanguage];
-  const fields = messages.fields;
-  const body = [
-    [fields.name, String(formData.get("name") || "").trim()],
-    [fields.phone, String(formData.get("phone") || "").trim()],
-    [fields.product, String(formData.get("product") || "").trim()],
-    [fields.message, String(formData.get("message") || "").trim()],
-  ]
-    .map(([label, value]) => `${label}: ${value || "-"}`)
-    .join("\n");
-  const params = new URLSearchParams({
-    subject: messages.subject,
-    body,
-  });
+function createContactRequestId() {
+  if (typeof window.crypto?.randomUUID === "function") {
+    return window.crypto.randomUUID();
+  }
 
-  return `mailto:${messages.email}?${params.toString()}`;
+  return `contact-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 14)}`;
 }
 
 function prepareStaggerItems() {
@@ -1125,12 +1112,215 @@ if (menuToggle && nav) {
 }
 
 if (contactForm && formStatus) {
-  contactForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const formData = new FormData(contactForm);
-    const messages = formMessages[siteLanguage];
+  let contactSubmission = null;
+  let turnstileWidgetId = null;
+  let turnstileToken = "";
+  const messages = formMessages[siteLanguage];
+  const submitButton = contactForm.querySelector('[data-contact-submit]');
+  const verificationContainer = contactForm.querySelector("[data-turnstile-container]");
 
-    formStatus.textContent = messages.status;
-    window.location.href = buildContactMailto(formData);
+  function updateContactSubmitState() {
+    if (submitButton) {
+      submitButton.disabled = contactForm.dataset.submitting === "true" || !turnstileToken;
+    }
+  }
+
+  function showVerificationMessage(message, state = "error") {
+    formStatus.dataset.state = state;
+    formStatus.dataset.context = "verification";
+    formStatus.textContent = message;
+  }
+
+  function clearVerificationMessage() {
+    if (formStatus.dataset.context !== "verification") return;
+    delete formStatus.dataset.state;
+    delete formStatus.dataset.context;
+    formStatus.textContent = "";
+  }
+
+  function resetContactVerification() {
+    turnstileToken = "";
+    updateContactSubmitState();
+    if (turnstileWidgetId !== null && window.turnstile?.reset) {
+      window.turnstile.reset(turnstileWidgetId);
+    }
+  }
+
+  function focusFirstInvalidContactField(fields = {}) {
+    const fieldName = ["name", "phone", "email", "product", "message"].find((name) => fields[name]);
+    if (!fieldName) return;
+
+    const field = contactForm.elements.namedItem(fieldName);
+    if (field && typeof field.focus === "function") {
+      field.setAttribute("aria-invalid", "true");
+      field.focus({ preventScroll: false });
+    }
+  }
+
+  function loadTurnstileScript() {
+    if (window.turnstile?.render) return Promise.resolve();
+
+    return new Promise((resolve, reject) => {
+      const existingScript = document.querySelector("script[data-bemas-turnstile]");
+      const script = existingScript || document.createElement("script");
+      const handleLoad = () => (window.turnstile?.render ? resolve() : reject(new Error("TURNSTILE_UNAVAILABLE")));
+      const handleError = () => reject(new Error("TURNSTILE_UNAVAILABLE"));
+
+      script.addEventListener("load", handleLoad, { once: true });
+      script.addEventListener("error", handleError, { once: true });
+      if (!existingScript) {
+        script.async = true;
+        script.defer = true;
+        script.dataset.bemasTurnstile = "";
+        script.referrerPolicy = "strict-origin-when-cross-origin";
+        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+        document.head.appendChild(script);
+      }
+    });
+  }
+
+  async function initializeContactVerification() {
+    updateContactSubmitState();
+    showVerificationMessage(messages.verificationLoading, "pending");
+
+    try {
+      const configResponse = await fetch(contactForm.action, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+      const config = await configResponse.json();
+      if (!configResponse.ok || config.ok !== true || typeof config.siteKey !== "string" || !config.siteKey.trim()) {
+        throw new Error("TURNSTILE_CONFIG_UNAVAILABLE");
+      }
+
+      await loadTurnstileScript();
+      if (!verificationContainer) throw new Error("TURNSTILE_CONTAINER_MISSING");
+
+      turnstileWidgetId = window.turnstile.render(verificationContainer, {
+        sitekey: config.siteKey,
+        action: "contact",
+        language: siteLanguage,
+        size: window.matchMedia("(max-width: 420px)").matches ? "compact" : "flexible",
+        "response-field": false,
+        callback(token) {
+          turnstileToken = String(token || "");
+          clearVerificationMessage();
+          updateContactSubmitState();
+        },
+        "expired-callback"() {
+          turnstileToken = "";
+          showVerificationMessage(messages.verificationRequired);
+          updateContactSubmitState();
+        },
+        "timeout-callback"() {
+          turnstileToken = "";
+          showVerificationMessage(messages.verificationRequired);
+          updateContactSubmitState();
+        },
+        "error-callback"() {
+          turnstileToken = "";
+          showVerificationMessage(messages.verificationUnavailable);
+          updateContactSubmitState();
+        },
+      });
+    } catch {
+      showVerificationMessage(messages.verificationUnavailable);
+      updateContactSubmitState();
+    }
+  }
+
+  contactForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (contactForm.dataset.submitting === "true") {
+      return;
+    }
+
+    if (!turnstileToken) {
+      showVerificationMessage(messages.verificationRequired);
+      updateContactSubmitState();
+      return;
+    }
+
+    const formData = new FormData(contactForm);
+    const payload = Object.fromEntries(formData.entries());
+    payload.language = siteLanguage;
+    const fingerprint = JSON.stringify(payload);
+
+    if (!contactSubmission || contactSubmission.fingerprint !== fingerprint) {
+      contactSubmission = { fingerprint, requestId: createContactRequestId() };
+    }
+    payload.requestId = contactSubmission.requestId;
+    payload.turnstileToken = turnstileToken;
+
+    contactForm.dataset.submitting = "true";
+    contactForm.setAttribute("aria-busy", "true");
+    if (submitButton) submitButton.disabled = true;
+    formStatus.dataset.state = "pending";
+    formStatus.textContent = messages.sending;
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 15_000);
+    let shouldResetVerification = true;
+
+    try {
+      const response = await fetch(contactForm.action, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+        credentials: "same-origin",
+        signal: controller.signal,
+      });
+      let result = {};
+      try {
+        result = await response.json();
+      } catch {
+        // Use the generic unavailable message for malformed server responses.
+      }
+
+      if (!response.ok || result.ok !== true) {
+        const error = new Error("CONTACT_REQUEST_FAILED");
+        error.code = result.code || "MAIL_DELIVERY_FAILED";
+        error.fields = result.fields || {};
+        throw error;
+      }
+
+      contactForm.reset();
+      contactSubmission = null;
+      delete formStatus.dataset.context;
+      formStatus.dataset.state = "success";
+      formStatus.textContent = messages.success;
+    } catch (error) {
+      formStatus.dataset.state = "error";
+      delete formStatus.dataset.context;
+      if (error?.code === "VALIDATION_ERROR") {
+        shouldResetVerification = false;
+        formStatus.textContent = messages.invalid;
+        focusFirstInvalidContactField(error.fields);
+      } else if (error?.code === "VERIFICATION_FAILED") {
+        showVerificationMessage(messages.verificationRequired);
+      } else if (error?.code === "RATE_LIMITED") {
+        shouldResetVerification = false;
+        formStatus.textContent = messages.rateLimited;
+      } else {
+        formStatus.textContent = messages.unavailable;
+      }
+    } finally {
+      window.clearTimeout(timeout);
+      contactForm.dataset.submitting = "false";
+      contactForm.removeAttribute("aria-busy");
+      if (shouldResetVerification) resetContactVerification();
+      else updateContactSubmitState();
+    }
   });
+
+  contactForm.addEventListener("input", (event) => {
+    if (event.target instanceof HTMLElement) event.target.removeAttribute("aria-invalid");
+  });
+
+  initializeContactVerification();
 }

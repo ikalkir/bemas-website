@@ -38,7 +38,7 @@
       imagesrcset="assets/optimized/showcase/bornova-quarry-hero-operation-800.webp 800w, assets/optimized/showcase/bornova-quarry-hero-operation-1600.webp 1600w"
       imagesizes="(max-width: 500px) calc(100vw - 32px), (max-width: 1080px) min(760px, calc(100vw - 48px)), 660px"
     />
-    <link rel="stylesheet" href="styles.css?v=20260721-analytics-consent-3" />
+    <link rel="stylesheet" href="styles.css?v=20260721-contact-backend-2" />
 
     <meta name="bemas-analytics-id" content="G-EZXXP8FV8T" />
 
@@ -735,42 +735,52 @@
         </div>
         <form
           class="contact-form"
-          action="mailto:info@bemasmining.com"
+          action="/api/contact"
           method="post"
-          enctype="text/plain"
+          enctype="application/x-www-form-urlencoded"
           aria-describedby="contact-form-note"
           data-contact-form
         >
+          <input name="language" type="hidden" value="en" />
+          <label class="form-honeypot" aria-hidden="true">
+            Website
+            <input name="website" type="text" autocomplete="off" tabindex="-1" />
+          </label>
           <label>
             Name / Company
-            <input name="name" type="text" autocomplete="organization" required />
+            <input name="name" type="text" autocomplete="organization" minlength="2" maxlength="120" required />
           </label>
           <label>
             Phone
-            <input name="phone" type="tel" autocomplete="tel" required />
+            <input name="phone" type="tel" autocomplete="tel" minlength="5" maxlength="40" pattern="[0-9+\.\(\) \-]{5,40}" title="Use only numbers, spaces, and + ( ) . - characters." required />
+          </label>
+          <label>
+            Email
+            <input name="email" type="email" autocomplete="email" maxlength="254" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" title="Enter a valid email address." required />
           </label>
           <label>
             Required product
             <select name="product" required>
               <option value="">Select</option>
-              <option>Crushed Stone</option>
-              <option>Stone Dust</option>
-              <option>Stabilized Aggregate</option>
-              <option>Fill Material</option>
-              <option>Riprap Stone</option>
-              <option>Other aggregate request</option>
+              <option value="crushed-stone">Crushed Stone</option>
+              <option value="stone-dust">Stone Dust</option>
+              <option value="stabilized-aggregate">Stabilized Aggregate</option>
+              <option value="fill-material">Fill Material</option>
+              <option value="riprap-stone">Riprap Stone</option>
+              <option value="other-aggregate">Other aggregate request</option>
             </select>
           </label>
           <label>
             Message
-            <textarea name="message" rows="4" placeholder="Project location, approximate tonnage and delivery date"></textarea>
+            <textarea name="message" rows="4" maxlength="2000" placeholder="Project location, approximate tonnage and delivery date"></textarea>
           </label>
           <p class="form-note" id="contact-form-note">
-            This form prepares your request in your email app; you must complete the send there. If the email app
-            does not open, write to <a href="mailto:info@bemasmining.com">info@bemasmining.com</a>.
+            Your details are sent directly to the Bemaş team only so we can respond to your quotation request.
+            If the form does not work, email <a href="mailto:info@bemasmining.com">info@bemasmining.com</a>.
           </p>
-          <button class="button button-primary" type="submit">
-            Create Email Draft
+          <div class="contact-verification" aria-label="Security verification" data-turnstile-container></div>
+          <button class="button button-primary" type="submit" data-contact-submit disabled>
+            Send Request
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
@@ -815,6 +825,6 @@
       </div>
     </footer>
 
-    <script src="script.js?v=20260721-analytics-consent-3"></script>
+    <script src="script.js?v=20260721-contact-backend-2"></script>
   </body>
 </html>
