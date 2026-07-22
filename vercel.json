@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     {
-      "source": "/(bornova-agrega|bornova-aggregate|izmir-agrega|izmir-aggregate|izmir-dolgu-malzemesi|izmir-fill-material|izmir-kirmatas|izmir-micir|izmir-road-sub-base|izmir-tas-ocagi|izmir-yol-alt-temel-malzemesi|urla-crushed-stone|urla-micir)",
+      "source": "/(bornova-agrega|bornova-aggregate|izmir-agrega|izmir-aggregate|izmir-dolgu-malzemesi|izmir-fill-material|izmir-kirmatas|izmir-micir|izmir-quarry|izmir-road-sub-base|izmir-tas-ocagi|izmir-yol-alt-temel-malzemesi|urla-crushed-stone|urla-micir)",
       "destination": "https://bemasagrega.com/$1/",
       "statusCode": 301,
       "has": [
@@ -13,7 +13,7 @@
       ]
     },
     {
-      "source": "/(bornova-agrega|bornova-aggregate|izmir-agrega|izmir-aggregate|izmir-dolgu-malzemesi|izmir-fill-material|izmir-kirmatas|izmir-micir|izmir-road-sub-base|izmir-tas-ocagi|izmir-yol-alt-temel-malzemesi|urla-crushed-stone|urla-micir)",
+      "source": "/(bornova-agrega|bornova-aggregate|izmir-agrega|izmir-aggregate|izmir-dolgu-malzemesi|izmir-fill-material|izmir-kirmatas|izmir-micir|izmir-quarry|izmir-road-sub-base|izmir-tas-ocagi|izmir-yol-alt-temel-malzemesi|urla-crushed-stone|urla-micir)",
       "destination": "https://bemasagrega.com/$1/",
       "statusCode": 301,
       "has": [
@@ -24,7 +24,7 @@
       ]
     },
     {
-      "source": "/(bornova-agrega|bornova-aggregate|izmir-agrega|izmir-aggregate|izmir-dolgu-malzemesi|izmir-fill-material|izmir-kirmatas|izmir-micir|izmir-road-sub-base|izmir-tas-ocagi|izmir-yol-alt-temel-malzemesi|urla-crushed-stone|urla-micir)",
+      "source": "/(bornova-agrega|bornova-aggregate|izmir-agrega|izmir-aggregate|izmir-dolgu-malzemesi|izmir-fill-material|izmir-kirmatas|izmir-micir|izmir-quarry|izmir-road-sub-base|izmir-tas-ocagi|izmir-yol-alt-temel-malzemesi|urla-crushed-stone|urla-micir)",
       "destination": "https://bemasagrega.com/$1/",
       "statusCode": 301,
       "has": [
@@ -35,7 +35,7 @@
       ]
     },
     {
-      "source": "/(bornova-agrega|bornova-aggregate|izmir-agrega|izmir-aggregate|izmir-dolgu-malzemesi|izmir-fill-material|izmir-kirmatas|izmir-micir|izmir-road-sub-base|izmir-tas-ocagi|izmir-yol-alt-temel-malzemesi|urla-crushed-stone|urla-micir)",
+      "source": "/(bornova-agrega|bornova-aggregate|izmir-agrega|izmir-aggregate|izmir-dolgu-malzemesi|izmir-fill-material|izmir-kirmatas|izmir-micir|izmir-quarry|izmir-road-sub-base|izmir-tas-ocagi|izmir-yol-alt-temel-malzemesi|urla-crushed-stone|urla-micir)",
       "destination": "/$1/",
       "statusCode": 301
     },
@@ -167,7 +167,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' https://www.googletagmanager.com https://challenges.cloudflare.com 'sha256-fiPzskNWKbIecAuqAa2zQntBB4A+ZJAVgaiCW3l/Z4g=' 'sha256-HtOrvtTTq2n4AKnjr3PsyM9TEuuBE4Krhxcw6ljoBSo=' 'sha256-iHehgE7W3C3U/mKhYREE0o+CX59tf+I9NVCzhoJsFyw=' 'sha256-oemaxDwZtlgddKPkoKWrCqNIYQ1513CrDbNyndl3SKg=' 'sha256-NtDRGejdloaDi8OrRSQAIOZLwg6zbgWoO9xyfcZf8Jo=' 'sha256-kILMkWf+TDn8ACkQzl9myGVclBK75d806UmoLCoOtCk=' 'sha256-J0D0NIPOjHQvwgjR73rr5w/5JoIKRoLETBmcWt94NiE=' 'sha256-u9TPS981QFO0s/7CHhxf1UAY5ppPyEyaDCiZiogsy8A=' 'sha256-pDFc8cWnLxalEGgloHqmarb2FgBK+KYp2VhxZgKKqNw=' 'sha256-cIKiCk3Kr37tsObDJx29ZdZjTIGNudp4hnsmDMgxpN0=' 'sha256-DNcsR5TkllN01Z/TmHgQyHx/1FMHZxjhU5KPJKAB/08=' 'sha256-xMEtZ0aZBj/ddFLufDEkEYVRuG9s8g9dvqu8OWkl8j4=' 'sha256-t6yJuLvcNyg0wE5yusQC5n2ecaSco3CzfPTDpeoRrp4=' 'sha256-Q6shNnhB99kRZ8mZEGbCsmuZbpxxGHr7x+E4qoBzsjo=' 'sha256-tEagWHeN0Or3qlFdp3fqy0lEHXj0WZncAN3zHg8K6KU=' 'sha256-JctnUQjrO2gNGI8CJaX0Q+s2VX9sUmKm45aPC1XCusU='; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' https://*.google-analytics.com https://www.googletagmanager.com; font-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://challenges.cloudflare.com; frame-src https://www.google.com https://challenges.cloudflare.com; media-src 'self'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' https://www.googletagmanager.com https://challenges.cloudflare.com 'sha256-fiPzskNWKbIecAuqAa2zQntBB4A+ZJAVgaiCW3l/Z4g=' 'sha256-HtOrvtTTq2n4AKnjr3PsyM9TEuuBE4Krhxcw6ljoBSo=' 'sha256-iHehgE7W3C3U/mKhYREE0o+CX59tf+I9NVCzhoJsFyw=' 'sha256-oemaxDwZtlgddKPkoKWrCqNIYQ1513CrDbNyndl3SKg=' 'sha256-NtDRGejdloaDi8OrRSQAIOZLwg6zbgWoO9xyfcZf8Jo=' 'sha256-kILMkWf+TDn8ACkQzl9myGVclBK75d806UmoLCoOtCk=' 'sha256-J0D0NIPOjHQvwgjR73rr5w/5JoIKRoLETBmcWt94NiE=' 'sha256-u9TPS981QFO0s/7CHhxf1UAY5ppPyEyaDCiZiogsy8A=' 'sha256-pDFc8cWnLxalEGgloHqmarb2FgBK+KYp2VhxZgKKqNw=' 'sha256-cIKiCk3Kr37tsObDJx29ZdZjTIGNudp4hnsmDMgxpN0=' 'sha256-DNcsR5TkllN01Z/TmHgQyHx/1FMHZxjhU5KPJKAB/08=' 'sha256-xMEtZ0aZBj/ddFLufDEkEYVRuG9s8g9dvqu8OWkl8j4=' 'sha256-t6yJuLvcNyg0wE5yusQC5n2ecaSco3CzfPTDpeoRrp4=' 'sha256-Q6shNnhB99kRZ8mZEGbCsmuZbpxxGHr7x+E4qoBzsjo=' 'sha256-tEagWHeN0Or3qlFdp3fqy0lEHXj0WZncAN3zHg8K6KU=' 'sha256-JctnUQjrO2gNGI8CJaX0Q+s2VX9sUmKm45aPC1XCusU=' 'sha256-5glOblFhdubusU+7ji3uUuO8Ojy4k8VqU4BaZ05JiIU='; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' https://*.google-analytics.com https://www.googletagmanager.com; font-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://challenges.cloudflare.com; frame-src https://www.google.com https://challenges.cloudflare.com; media-src 'self'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests"
         },
         {
           "key": "X-Content-Type-Options",
