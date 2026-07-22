@@ -79,6 +79,13 @@ const formMessages = {
     sending: "Talebiniz güvenli biçimde gönderiliyor…",
     success: "Talebiniz Bemaş ekibine ulaştı. En kısa sürede sizinle iletişime geçeceğiz.",
     invalid: "Lütfen zorunlu alanları kontrol edip tekrar deneyin.",
+    fieldErrors: {
+      name: "Lütfen en az 2 karakterlik ad veya firma adı girin.",
+      phone: "Geçerli bir telefon numarası girin.",
+      email: "Geçerli bir e-posta adresi girin.",
+      product: "Lütfen ihtiyaç duyduğunuz ürünü seçin.",
+      message: "Mesaj 2.000 karakteri geçmemelidir.",
+    },
     rateLimited: "Kısa sürede çok fazla deneme yapıldı. Lütfen birkaç dakika sonra tekrar deneyin.",
     unavailable: "Talebiniz şu anda gönderilemedi. Lütfen info@bemasmining.com adresine e-posta gönderin.",
   },
@@ -89,6 +96,13 @@ const formMessages = {
     sending: "Your request is being sent securely…",
     success: "Your request has reached the Bemaş team. We will contact you as soon as possible.",
     invalid: "Please check the required fields and try again.",
+    fieldErrors: {
+      name: "Enter a name or company name with at least 2 characters.",
+      phone: "Enter a valid phone number.",
+      email: "Enter a valid email address.",
+      product: "Select the product you need.",
+      message: "The message must not exceed 2,000 characters.",
+    },
     rateLimited: "Too many attempts were made in a short time. Please try again in a few minutes.",
     unavailable: "Your request could not be sent right now. Please email info@bemasmining.com.",
   },
@@ -1121,6 +1135,7 @@ if (contactForm && formStatus) {
   const messages = formMessages[siteLanguage];
   const submitButton = contactForm.querySelector('[data-contact-submit]');
   const verificationContainer = contactForm.querySelector("[data-turnstile-container]");
+  const contactFieldNames = ["name", "phone", "email", "product", "message"];
 
   function updateContactSubmitState() {
     if (submitButton) {
@@ -1149,15 +1164,53 @@ if (contactForm && formStatus) {
     }
   }
 
-  function focusFirstInvalidContactField(fields = {}) {
-    const fieldName = ["name", "phone", "email", "product", "message"].find((name) => fields[name]);
-    if (!fieldName) return;
+  function contactFieldErrorId(fieldName) {
+    return `contact-${siteLanguage}-${fieldName}-error`;
+  }
 
-    const field = contactForm.elements.namedItem(fieldName);
-    if (field && typeof field.focus === "function") {
+  function clearContactFieldError(field) {
+    if (!(field instanceof HTMLElement) || !contactFieldNames.includes(field.getAttribute("name"))) return;
+
+    const errorId = contactFieldErrorId(field.getAttribute("name"));
+    document.getElementById(errorId)?.remove();
+    const describedBy = (field.getAttribute("aria-describedby") || "")
+      .split(/\s+/)
+      .filter((id) => id && id !== errorId);
+
+    if (describedBy.length) field.setAttribute("aria-describedby", describedBy.join(" "));
+    else field.removeAttribute("aria-describedby");
+    field.removeAttribute("aria-invalid");
+  }
+
+  function clearContactFieldErrors() {
+    contactFieldNames.forEach((fieldName) => {
+      clearContactFieldError(contactForm.elements.namedItem(fieldName));
+    });
+  }
+
+  function showContactFieldErrors(fields = {}) {
+    clearContactFieldErrors();
+    let firstInvalidField = null;
+
+    contactFieldNames.forEach((fieldName) => {
+      if (!fields[fieldName]) return;
+      const field = contactForm.elements.namedItem(fieldName);
+      if (!(field instanceof HTMLElement)) return;
+
+      const errorId = contactFieldErrorId(fieldName);
+      const error = document.createElement("span");
+      const describedBy = new Set((field.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean));
+      error.id = errorId;
+      error.className = "form-field-error";
+      error.textContent = messages.fieldErrors[fieldName] || messages.invalid;
+      field.insertAdjacentElement("afterend", error);
+      describedBy.add(errorId);
+      field.setAttribute("aria-describedby", Array.from(describedBy).join(" "));
       field.setAttribute("aria-invalid", "true");
-      field.focus({ preventScroll: false });
-    }
+      firstInvalidField ||= field;
+    });
+
+    firstInvalidField?.focus({ preventScroll: false });
   }
 
   function loadTurnstileScript() {
@@ -1246,6 +1299,7 @@ if (contactForm && formStatus) {
       return;
     }
 
+    clearContactFieldErrors();
     const formData = new FormData(contactForm);
     const payload = Object.fromEntries(formData.entries());
     payload.language = siteLanguage;
@@ -1293,6 +1347,7 @@ if (contactForm && formStatus) {
       }
 
       contactForm.reset();
+      clearContactFieldErrors();
       contactSubmission = null;
       delete formStatus.dataset.context;
       formStatus.dataset.state = "success";
@@ -1303,7 +1358,7 @@ if (contactForm && formStatus) {
       if (error?.code === "VALIDATION_ERROR") {
         shouldResetVerification = false;
         formStatus.textContent = messages.invalid;
-        focusFirstInvalidContactField(error.fields);
+        showContactFieldErrors(error.fields);
       } else if (error?.code === "VERIFICATION_FAILED") {
         showVerificationMessage(messages.verificationRequired);
       } else if (error?.code === "RATE_LIMITED") {
@@ -1322,7 +1377,7 @@ if (contactForm && formStatus) {
   });
 
   contactForm.addEventListener("input", (event) => {
-    if (event.target instanceof HTMLElement) event.target.removeAttribute("aria-invalid");
+    clearContactFieldError(event.target);
   });
 
   initializeContactVerification();

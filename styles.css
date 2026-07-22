@@ -1226,6 +1226,20 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
   box-shadow: 0 0 0 3px rgba(39, 73, 165, 0.12);
 }
 
+.contact-form [aria-invalid="true"] {
+  border-color: #9b1c1c;
+  background: #fff8f8;
+}
+
+.form-field-error {
+  display: block;
+  margin-top: -2px;
+  color: #9b1c1c;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
 .contact-form button {
   width: fit-content;
   margin-top: 4px;
