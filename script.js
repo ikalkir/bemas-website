@@ -128,8 +128,8 @@ function redirectToLanguage(language) {
   return true;
 }
 
-function isExplicitLanguagePage() {
-  return window.location.pathname.split("/").pop() === "en.html";
+function isAutomaticLanguageEntryPage(pathname = window.location.pathname) {
+  return pathname === "/" || pathname === "/index.html";
 }
 
 function fallbackDetectedLanguage() {
@@ -1040,7 +1040,7 @@ languageLinks.forEach((link) => {
     return;
   }
 
-  if (isExplicitLanguagePage()) {
+  if (!isAutomaticLanguageEntryPage()) {
     setupAnalyticsConsent();
     return;
   }
