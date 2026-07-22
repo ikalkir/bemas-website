@@ -2020,7 +2020,18 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
 
 /* Premium export page */
 .export-page {
+  position: relative;
   background: #f5f7fa;
+}
+
+.export-language-switcher {
+  position: absolute;
+  z-index: 3;
+  top: 24px;
+  right: clamp(18px, 4vw, 64px);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 28px rgba(8, 20, 44, 0.18);
+  backdrop-filter: blur(12px);
 }
 
 .export-hero {
