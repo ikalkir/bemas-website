@@ -3,6 +3,39 @@
   "redirects": [
     {
       "source": "/(bornova-agrega|izmir-agrega|izmir-dolgu-malzemesi|izmir-kirmatas|izmir-micir|izmir-tas-ocagi|izmir-yol-alt-temel-malzemesi|urla-micir)",
+      "destination": "https://bemasagrega.com/$1/",
+      "statusCode": 301,
+      "has": [
+        {
+          "type": "host",
+          "value": "bemasmining.com"
+        }
+      ]
+    },
+    {
+      "source": "/(bornova-agrega|izmir-agrega|izmir-dolgu-malzemesi|izmir-kirmatas|izmir-micir|izmir-tas-ocagi|izmir-yol-alt-temel-malzemesi|urla-micir)",
+      "destination": "https://bemasagrega.com/$1/",
+      "statusCode": 301,
+      "has": [
+        {
+          "type": "host",
+          "value": "www.bemasmining.com"
+        }
+      ]
+    },
+    {
+      "source": "/(bornova-agrega|izmir-agrega|izmir-dolgu-malzemesi|izmir-kirmatas|izmir-micir|izmir-tas-ocagi|izmir-yol-alt-temel-malzemesi|urla-micir)",
+      "destination": "https://bemasagrega.com/$1/",
+      "statusCode": 301,
+      "has": [
+        {
+          "type": "host",
+          "value": "www.bemasagrega.com"
+        }
+      ]
+    },
+    {
+      "source": "/(bornova-agrega|izmir-agrega|izmir-dolgu-malzemesi|izmir-kirmatas|izmir-micir|izmir-tas-ocagi|izmir-yol-alt-temel-malzemesi|urla-micir)",
       "destination": "/$1/",
       "statusCode": 301
     },
