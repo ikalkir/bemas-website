@@ -1844,7 +1844,9 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
 }
 
 .local-hero-media img {
+  display: block;
   width: 100%;
+  height: auto;
   aspect-ratio: 4 / 3;
   object-fit: cover;
   box-shadow: var(--shadow);
