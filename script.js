@@ -659,6 +659,9 @@ function setupLoopingCarousel({
   if (!scrollElement.hasAttribute("tabindex")) {
     scrollElement.tabIndex = 0;
   }
+  if (!scrollElement.hasAttribute("role")) {
+    scrollElement.setAttribute("role", "region");
+  }
   if (!scrollElement.hasAttribute("aria-label")) {
     scrollElement.setAttribute(
       "aria-label",

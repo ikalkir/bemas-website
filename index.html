@@ -93,7 +93,7 @@
           <a href="#iletisim">İletişim</a>
         </nav>
 
-        <div class="language-switcher" aria-label="Dil seçimi">
+        <div class="language-switcher" role="group" aria-label="Dil seçimi">
           <a class="language-link is-active" href="./" lang="tr" hreflang="tr" data-lang-choice="tr" aria-current="page">
             <img src="assets/flag-tr.svg" alt="" aria-hidden="true" width="36" height="24" decoding="async" />
             <span>TR</span>
@@ -132,7 +132,7 @@
             İzmir Bornova ve Urla'daki taş ocağı sahalarımızda, kırma eleme tesislerimizle agrega, mıcır,
             mıcır tozu, stabilize, anroşman taşı ve dolgu malzemesi üretimi yapıyoruz.
           </p>
-          <div class="hero-actions" aria-label="Hızlı bağlantılar">
+          <div class="hero-actions" role="group" aria-label="Hızlı bağlantılar">
             <a class="button button-primary" href="#iletisim">
               Teklif Alın
               <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -220,7 +220,7 @@
           </table>
         </div>
 
-        <div class="local-supply-links" aria-label="Yerel agrega ve mıcır tedarik sayfaları">
+        <div class="local-supply-links" role="navigation" aria-label="Yerel agrega ve mıcır tedarik sayfaları">
           <a href="/izmir-micir/">İzmir Mıcır</a>
           <a href="/izmir-agrega/">İzmir Agrega</a>
           <a href="/izmir-kirmatas/">İzmir Kırmataş</a>
@@ -518,7 +518,7 @@
           <h2>Belgeler</h2>
           <p>Bornova üretim sahasına ait TSE ve CE uygunluk belgeleri.</p>
         </div>
-        <div class="certificate-carousel" tabindex="0" aria-label="Belgeleri yatay kaydır">
+        <div class="certificate-carousel" role="region" tabindex="0" aria-label="Belgeleri yatay kaydır">
           <div class="certificate-grid stagger-group" data-certificate-track>
             <figure class="certificate-card" data-award-year="2026" data-award-order="1">
               <a href="assets/documents/quality/ts-706-en-12620-a1-tse.pdf" target="_blank" rel="noopener noreferrer" aria-label="TS 706 EN 12620 A1 TSE belgesini PDF olarak aç">
@@ -583,7 +583,7 @@
           <h2>Başarı Ödülleri</h2>
           <p>Ege Bölgesi Sanayi Odası ve İzmir Ticaret Odası tarafından verilen ödül ve takdirnameler.</p>
         </div>
-        <div class="certificate-carousel" tabindex="0" aria-label="Başarı ödüllerini yatay kaydır">
+        <div class="certificate-carousel" role="region" tabindex="0" aria-label="Başarı ödüllerini yatay kaydır">
           <div class="certificate-grid stagger-group" data-certificate-track>
             <figure class="certificate-card" data-award-year="2016" data-award-order="1">
               <a href="assets/certificates/clean/2016-ebso-uretim-ucunculuk.jpeg" target="_blank" rel="noopener noreferrer">
@@ -657,7 +657,7 @@
           <h2>Referanslarımız</h2>
           <p>İzmir ve Ege Bölgesi'nde beton santrali ve yapı malzemeleri sektöründe çalıştığımız firmalardan bazıları.</p>
         </div>
-        <div class="reference-grid stagger-group" aria-label="Bemaş referans firmaları">
+        <div class="reference-grid stagger-group" role="region" aria-label="Bemaş referans firmaları">
           <article aria-label="Çimbeton">
             <div class="reference-logo-frame">
               <img src="assets/references/cimbeton-logo.png" alt="Çimbeton logosu" width="165" height="49" loading="lazy" decoding="async" />
@@ -719,7 +719,7 @@
             Bornova merkez adresimizden veya telefon hattımızdan Bemaş ekibine ulaşabilir, agrega ve mıcır
             talepleriniz için bilgi alabilirsiniz.
           </p>
-          <div class="contact-details stagger-group" aria-label="Bemaş iletişim bilgileri">
+          <div class="contact-details stagger-group" role="group" aria-label="Bemaş iletişim bilgileri">
             <article>
               <span>Telefon</span>
               <a href="tel:+902323601085">+90 232 360 10 85</a>
@@ -787,7 +787,7 @@
             Bilgileriniz yalnızca teklif talebinizi yanıtlamak amacıyla doğrudan Bemaş ekibine iletilir.
             Form çalışmazsa <a href="mailto:info@bemasmining.com">info@bemasmining.com</a> adresine yazın.
           </p>
-          <div class="contact-verification" aria-label="Güvenlik doğrulaması" data-turnstile-container></div>
+          <div class="contact-verification" role="group" aria-label="Güvenlik doğrulaması" data-turnstile-container></div>
           <button class="button button-primary" type="submit" data-contact-submit disabled>
             Talebi Gönder
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -836,6 +836,6 @@
       </div>
     </footer>
 
-    <script src="script.js?v=20260722-language-routing-1"></script>
+    <script src="script.js?v=20260722-aria-semantics-1"></script>
   </body>
 </html>
