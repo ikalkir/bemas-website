@@ -21,6 +21,7 @@ const htmlFiles = [
   "izmir-crushed-stone/index.html",
   "izmir-micir/index.html",
   "izmir-road-sub-base/index.html",
+  "izmir-stone-chippings/index.html",
   "izmir-tas-ocagi/index.html",
   "izmir-quarry/index.html",
   "izmir-yol-alt-temel-malzemesi/index.html",
@@ -115,6 +116,6 @@ test("CSP hashes match every inline JSON-LD block", () => {
     .map((source) => source.slice(1, -1))
     .sort();
 
-  assert.equal(htmlFiles.length, 19);
+  assert.equal(htmlFiles.length, 20);
   assert.deepEqual(configured, inlineScriptHashes());
 });
