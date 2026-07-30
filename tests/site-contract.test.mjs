@@ -152,3 +152,54 @@ test("redesign assets have immutable cache headers and no fake inline artwork", 
     assert.doesNotMatch(source, /[🏭⚓🚢]/u, `${file} contains emoji artwork`);
   }
 });
+
+test("localized page pairs keep section parity", () => {
+  const pairs = [
+    ["index.html", "en.html"],
+    ["export-tr.html", "export.html"],
+    ["bornova-agrega/index.html", "bornova-aggregate/index.html"],
+    ["izmir-agrega/index.html", "izmir-aggregate/index.html"],
+    ["izmir-dolgu-malzemesi/index.html", "izmir-fill-material/index.html"],
+    ["izmir-kirmatas/index.html", "izmir-crushed-stone/index.html"],
+    ["izmir-micir/index.html", "izmir-stone-chippings/index.html"],
+    ["izmir-yol-alt-temel-malzemesi/index.html", "izmir-road-sub-base/index.html"],
+    ["izmir-tas-ocagi/index.html", "izmir-quarry/index.html"],
+    ["urla-micir/index.html", "urla-crushed-stone/index.html"],
+  ];
+
+  assert.equal(pairs.flat().length, htmlFiles.length);
+  assert.deepEqual(new Set(pairs.flat()), new Set(htmlFiles));
+
+  for (const [trFile, enFile] of pairs) {
+    assert.equal(
+      tags(html(trFile), "section").length,
+      tags(html(enFile), "section").length,
+      `${trFile} and ${enFile} must keep section parity`,
+    );
+  }
+});
+
+test("export routes keep a semantic page shell", () => {
+  for (const file of ["export.html", "export-tr.html"]) {
+    const source = html(file);
+    const counts = Object.fromEntries(
+      ["header", "nav", "main", "footer"].map((tagName) => [tagName, tags(source, tagName).length]),
+    );
+
+    assert.deepEqual(counts, { header: 1, nav: 1, main: 1, footer: 1 });
+    assert.ok(source.indexOf("<header>") < source.indexOf("<main>"), `${file} must place header before main`);
+    assert.ok(source.indexOf("<main>") < source.indexOf("<footer>"), `${file} must place footer after main`);
+    assert.match(source, /<main>[\s\S]*?<section class="export-hero">[\s\S]*?<\/main>/);
+    assert.match(source, /<footer>[\s\S]*?<section class="section export-cta">[\s\S]*?<\/footer>/);
+  }
+});
+
+test("global security headers keep COOP isolation", () => {
+  const config = JSON.parse(readFileSync(resolve(projectRoot, "vercel.json"), "utf8"));
+  const globalHeaders = config.headers.find(({ source }) => source === "/(.*)")?.headers || [];
+  const coopValues = globalHeaders
+    .filter(({ key }) => key.toLowerCase() === "cross-origin-opener-policy")
+    .map(({ value }) => value);
+
+  assert.deepEqual(coopValues, ["same-origin"]);
+});
