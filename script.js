@@ -111,18 +111,32 @@ const formMessages = {
 
 const quoteConsoleMessages = {
   tr: {
-    blockTitle: "Teklif planlayıcı seçimi",
-    product: "Ürün / ebat",
-    delivery: "Teslimat",
-    success: "Seçiminiz teklif formuna aktarıldı. Eksik iletişim alanını doldurarak devam edebilirsiniz.",
-    unavailable: "Teklif formu bu sayfada bulunamadı.",
+    blockTitle: "Sipariş özeti",
+    product: "Malzeme / ebat",
+    tonnage: "Tonaj",
+    delivery: "Teslim noktası",
+    unitSingular: "ton",
+    unitPlural: "ton",
+    start: "Önce malzeme seçin.",
+    tonnagePrompt: "Şimdi 1 ton veya üzeri sipariş miktarını girin.",
+    deliveryPrompt: "Şimdi teslim noktasını seçin.",
+    ready: "Seçimler tamamlandı. Sipariş Ver butonuyla devam edin.",
+    success: "Sipariş özetiniz iletişim formuna aktarıldı. İletişim bilgilerinizi tamamlayarak gönderin.",
+    unavailable: "İletişim formu bu sayfada bulunamadı.",
   },
   en: {
-    blockTitle: "Quote planner selection",
-    product: "Product / size",
-    delivery: "Delivery",
-    success: "Your selection was added to the quote form. Complete the missing contact fields to continue.",
-    unavailable: "The quote form is not available on this page.",
+    blockTitle: "Order summary",
+    product: "Material / size",
+    tonnage: "Tonnage",
+    delivery: "Delivery point",
+    unitSingular: "ton",
+    unitPlural: "tons",
+    start: "Start by selecting a material.",
+    tonnagePrompt: "Now enter an order quantity of at least 1 ton.",
+    deliveryPrompt: "Now choose a delivery point.",
+    ready: "Your selections are complete. Continue with Place Order.",
+    success: "Your order summary was added to the contact form. Complete your contact details to send it.",
+    unavailable: "The contact form is not available on this page.",
   },
 };
 
@@ -1115,6 +1129,35 @@ function setQuoteChoice(group, selectedButton) {
   });
 }
 
+function setQuoteStepEnabled(step, isEnabled) {
+  if (!step) return;
+  step.classList.toggle("is-locked", !isEnabled);
+  step.setAttribute("aria-disabled", String(!isEnabled));
+}
+
+function quoteTonnageValue(input) {
+  if (!(input instanceof HTMLInputElement) || !input.value.trim() || !input.validity.valid) {
+    return null;
+  }
+
+  const value = input.valueAsNumber;
+  return Number.isFinite(value) && value >= 1 ? value : null;
+}
+
+function quoteWorkflowState(hasProduct, tonnage, hasDelivery) {
+  const tonnageEnabled = Boolean(hasProduct);
+  const deliveryEnabled = tonnageEnabled && tonnage !== null;
+  return {
+    tonnageEnabled,
+    deliveryEnabled,
+    isReady: deliveryEnabled && Boolean(hasDelivery),
+  };
+}
+
+function quoteTonnageUnit(messages, tonnage) {
+  return tonnage === 1 ? messages.unitSingular : messages.unitPlural;
+}
+
 function quoteMessageWithUserText(textarea, generatedBlock, previousBlock = "") {
   const maxLength = Number(textarea.maxLength) > 0 ? Number(textarea.maxLength) : 2000;
   const currentValue = sanitizeQuoteText(textarea.value);
@@ -1126,17 +1169,13 @@ function quoteMessageWithUserText(textarea, generatedBlock, previousBlock = "") 
     userText = currentValue.slice(previousBlock.length + 2);
   }
 
-  if (!userText) {
-    return generatedBlock.slice(0, maxLength);
-  }
-
+  const preservedBlock = generatedBlock.slice(0, maxLength);
+  if (!userText) return preservedBlock;
   const separator = "\n\n";
-  const availableForBlock = Math.max(0, maxLength - userText.length - separator.length);
-  if (!availableForBlock) {
-    return userText.slice(0, maxLength);
-  }
+  const availableForUserText = Math.max(0, maxLength - preservedBlock.length - separator.length);
+  if (!availableForUserText) return preservedBlock;
 
-  return `${generatedBlock.slice(0, availableForBlock)}${separator}${userText}`.slice(0, maxLength);
+  return `${preservedBlock}${separator}${userText.slice(0, availableForUserText)}`;
 }
 
 function setupQuoteConsoles() {
@@ -1145,18 +1184,72 @@ function setupQuoteConsoles() {
     const messages = quoteConsoleMessages[language];
     const productChoices = Array.from(consoleElement.querySelectorAll("[data-quote-product]"));
     const deliveryChoices = Array.from(consoleElement.querySelectorAll("[data-quote-delivery]"));
+    const tonnageInput = consoleElement.querySelector("[data-quote-tonnage]");
+    const tonnageUnitLabel = consoleElement.querySelector("[data-quote-tonnage-unit]");
+    const tonnageStep = consoleElement.querySelector("[data-quote-tonnage-step]");
+    const deliveryStep = consoleElement.querySelector("[data-quote-delivery-step]");
     const applyButton = consoleElement.querySelector("[data-quote-apply]");
     const consoleStatus = consoleElement.querySelector("[data-quote-status]");
 
+    const updateConsoleState = () => {
+      const productChoice = productChoices.find((button) => button.classList.contains("is-selected")) || null;
+      const productSelected = Boolean(productChoice);
+      const tonnage = productSelected ? quoteTonnageValue(tonnageInput) : null;
+      const baseWorkflowState = quoteWorkflowState(productSelected, tonnage, false);
+      if (tonnageInput instanceof HTMLInputElement) {
+        tonnageInput.disabled = !baseWorkflowState.tonnageEnabled;
+      }
+      setQuoteStepEnabled(tonnageStep, baseWorkflowState.tonnageEnabled);
+      if (tonnageUnitLabel) {
+        tonnageUnitLabel.textContent = quoteTonnageUnit(messages, tonnage);
+      }
+
+      if (!baseWorkflowState.deliveryEnabled) {
+        setQuoteChoice(deliveryChoices, null);
+      }
+
+      deliveryChoices.forEach((button) => {
+        button.disabled = !baseWorkflowState.deliveryEnabled;
+      });
+      setQuoteStepEnabled(deliveryStep, baseWorkflowState.deliveryEnabled);
+
+      const deliveryChoice = deliveryChoices.find((button) => button.classList.contains("is-selected")) || null;
+      const { isReady } = quoteWorkflowState(productSelected, tonnage, Boolean(deliveryChoice));
+      if (applyButton) {
+        applyButton.disabled = !isReady;
+      }
+
+      if (consoleStatus) {
+        if (!productChoice) consoleStatus.textContent = messages.start;
+        else if (tonnage === null) consoleStatus.textContent = messages.tonnagePrompt;
+        else if (!deliveryChoice) consoleStatus.textContent = messages.deliveryPrompt;
+        else consoleStatus.textContent = messages.ready;
+      }
+
+      return { productChoice, tonnage, deliveryChoice, isReady };
+    };
+
     productChoices.forEach((button) => {
-      button.addEventListener("click", () => setQuoteChoice(productChoices, button));
+      button.addEventListener("click", () => {
+        setQuoteChoice(productChoices, button);
+        updateConsoleState();
+      });
     });
 
+    tonnageInput?.addEventListener("input", updateConsoleState);
+
     deliveryChoices.forEach((button) => {
-      button.addEventListener("click", () => setQuoteChoice(deliveryChoices, button));
+      button.addEventListener("click", () => {
+        if (button.disabled) return;
+        setQuoteChoice(deliveryChoices, button);
+        updateConsoleState();
+      });
     });
 
     applyButton?.addEventListener("click", () => {
+      const selection = updateConsoleState();
+      if (!selection.isReady) return;
+
       if (!contactForm) {
         if (consoleStatus) {
           consoleStatus.textContent = messages.unavailable;
@@ -1164,8 +1257,6 @@ function setupQuoteConsoles() {
         return;
       }
 
-      const productChoice = productChoices.find((button) => button.classList.contains("is-selected")) || productChoices[0];
-      const deliveryChoice = deliveryChoices.find((button) => button.classList.contains("is-selected")) || deliveryChoices[0];
       const productField = contactForm.elements.namedItem("product");
       const messageField = contactForm.elements.namedItem("message");
 
@@ -1176,10 +1267,14 @@ function setupQuoteConsoles() {
         return;
       }
 
-      const productValue = sanitizeQuoteText(productChoice?.dataset.quoteProduct);
-      const productLabel = sanitizeQuoteText(productChoice?.dataset.quoteLabel);
-      const productSize = sanitizeQuoteText(productChoice?.dataset.quoteSize);
-      const delivery = sanitizeQuoteText(deliveryChoice?.dataset.quoteDelivery);
+      const productValue = sanitizeQuoteText(selection.productChoice?.dataset.quoteProduct);
+      const productLabel = sanitizeQuoteText(selection.productChoice?.dataset.quoteLabel);
+      const productSize = sanitizeQuoteText(selection.productChoice?.dataset.quoteSize);
+      const delivery = sanitizeQuoteText(selection.deliveryChoice?.dataset.quoteDelivery);
+      const formattedTonnage = new Intl.NumberFormat(language === "tr" ? "tr-TR" : "en-US", {
+        maximumFractionDigits: 2,
+      }).format(selection.tonnage);
+      const tonnageUnit = quoteTonnageUnit(messages, selection.tonnage);
       const productDescription =
         productSize && !productLabel.toLocaleLowerCase(language).includes(productSize.toLocaleLowerCase(language))
           ? `${productLabel} — ${productSize}`
@@ -1187,6 +1282,7 @@ function setupQuoteConsoles() {
       const generatedBlock = [
         `${messages.blockTitle}:`,
         `${messages.product}: ${productDescription}`,
+        `${messages.tonnage}: ${formattedTonnage} ${tonnageUnit}`,
         `${messages.delivery}: ${delivery}`,
       ].join("\n");
       const previousBlock = quoteConsoleState.get(consoleElement)?.generatedBlock || "";
@@ -1217,6 +1313,8 @@ function setupQuoteConsoles() {
         firstBlankRequiredField?.focus({ preventScroll: true });
       });
     });
+
+    updateConsoleState();
   });
 }
 

@@ -2072,6 +2072,39 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
   backdrop-filter: blur(12px);
 }
 
+.export-page .export-home-link {
+  position: absolute;
+  z-index: 3;
+  top: 22px;
+  left: var(--page-gutter, clamp(18px, 5vw, 76px));
+  display: inline-flex;
+  align-items: center;
+  border-radius: 14px;
+  transition:
+    transform var(--motion-fast) ease,
+    filter var(--motion-fast) ease;
+}
+
+.export-page .export-home-link img {
+  width: 126px;
+  max-height: 46px;
+  padding: 5px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 18px 48px rgba(5, 13, 20, 0.18);
+  object-fit: contain;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .export-page .export-home-link:hover {
+    filter: brightness(1.03);
+    transform: translateY(-2px);
+  }
+}
+
 .export-hero {
   position: relative;
   min-height: 680px;
@@ -2219,6 +2252,12 @@ body.is-motion-ready .animate-in:not(.is-visible) .stagger-item {
 }
 
 @media (max-width: 900px) {
+  .export-page .export-home-link img {
+    width: 112px;
+    max-height: 42px;
+    padding: 4px 8px;
+  }
+
   .export-hero {
     min-height: 560px;
   }

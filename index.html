@@ -39,7 +39,7 @@
       imagesizes="(max-width: 500px) calc(100vw - 32px), (max-width: 1080px) min(760px, calc(100vw - 48px)), 660px"
     />
     <link rel="stylesheet" href="styles.css?v=20260722-semantic-containers-1" />
-    <link rel="stylesheet" href="liquid-glass.css?v=20260730-liquid-glass-1" />
+    <link rel="stylesheet" href="liquid-glass.css?v=20260730-order-flow-2" />
 
     <meta name="bemas-analytics-id" content="G-EZXXP8FV8T" />
 
@@ -141,11 +141,11 @@
           </div>
         </div>
 
-        <div class="hero-console" data-quote-console data-language="tr" role="region" aria-labelledby="quote-console-title-tr">
-          <div class="console-products">
-            <p class="console-label" id="quote-console-title-tr">Ürün / ebat seçin</p>
+        <div class="hero-console" id="siparis" data-quote-console data-language="tr" role="region" aria-labelledby="quote-console-title-tr">
+          <div class="console-products console-step" data-quote-product-step>
+            <p class="console-label" id="quote-console-title-tr">1 · Malzeme seçin</p>
             <div class="quote-choice-list" role="group" aria-label="Ürün ve ebat seçenekleri">
-              <button class="quote-choice is-selected" type="button" aria-pressed="true" data-quote-product="crushed-stone" data-quote-size="0–5 mm" data-quote-label="Mıcır 0–5 mm"><span class="quote-swatch swatch-fine" aria-hidden="true"></span>Mıcır 0–5 mm</button>
+              <button class="quote-choice" type="button" aria-pressed="false" data-quote-product="crushed-stone" data-quote-size="0–5 mm" data-quote-label="Mıcır 0–5 mm"><span class="quote-swatch swatch-fine" aria-hidden="true"></span>Mıcır 0–5 mm</button>
               <button class="quote-choice" type="button" aria-pressed="false" data-quote-product="crushed-stone" data-quote-size="5–12 mm" data-quote-label="Mıcır 5–12 mm"><span class="quote-swatch swatch-medium" aria-hidden="true"></span>Mıcır 5–12 mm</button>
               <button class="quote-choice" type="button" aria-pressed="false" data-quote-product="crushed-stone" data-quote-size="12–22 mm" data-quote-label="Mıcır 12–22 mm"><span class="quote-swatch swatch-coarse" aria-hidden="true"></span>Mıcır 12–22 mm</button>
               <button class="quote-choice" type="button" aria-pressed="false" data-quote-product="stabilized-aggregate" data-quote-size="Proje talebine göre" data-quote-label="Stabilize"><span class="quote-swatch swatch-stabilized" aria-hidden="true"></span>Stabilize</button>
@@ -154,25 +154,28 @@
             </div>
           </div>
 
-          <div class="console-capacity" role="group" aria-label="Üretim kapasitesi">
-            <p class="console-label">Kapasitemiz</p>
-            <div class="console-metric-grid">
-              <div><strong>2</strong><span>aktif tesis</span></div>
-              <div><strong>850</strong><span>ton/saat</span></div>
-              <div><strong>2,1M</strong><span>ton/yıl</span></div>
+          <div class="console-tonnage console-step is-locked" role="group" aria-label="Tonaj seçimi" aria-disabled="true" data-quote-tonnage-step>
+            <p class="console-label">2 · Tonaj girin</p>
+            <label class="tonnage-label" for="quote-tonnage-tr">Yaklaşık sipariş miktarı (ton)</label>
+            <div class="tonnage-input-shell">
+              <input id="quote-tonnage-tr" type="number" min="1" step="1" inputmode="numeric" autocomplete="off" placeholder="Örn. 100" aria-describedby="quote-console-status-tr" data-quote-tonnage disabled />
+              <span aria-hidden="true" data-quote-tonnage-unit>ton</span>
             </div>
-            <button class="button button-primary console-apply" type="button" data-quote-apply>Ürün ve teslim noktasını forma aktar</button>
           </div>
 
-          <div class="console-logistics">
-            <p class="console-label">Teslimat &amp; lojistik</p>
+          <div class="console-logistics console-step is-locked" role="group" aria-labelledby="quote-delivery-title-tr" aria-disabled="true" data-quote-delivery-step>
+            <p class="console-label" id="quote-delivery-title-tr">3 · Teslim noktası seçin</p>
             <div class="delivery-choice-list" role="group" aria-label="Teslimat noktası seçenekleri">
-              <button class="delivery-choice is-selected" type="button" aria-pressed="true" data-quote-delivery="İzmir şantiye teslimi"><strong>İzmir şantiye</strong><span>Bornova veya Urla çıkışlı</span></button>
-              <button class="delivery-choice" type="button" aria-pressed="false" data-quote-delivery="Alsancak Limanı teslimi"><strong>Alsancak Limanı</strong><span>İhracat sevkiyatı</span></button>
-              <button class="delivery-choice" type="button" aria-pressed="false" data-quote-delivery="Aliağa Limanı teslimi"><strong>Aliağa Limanı</strong><span>İhracat sevkiyatı</span></button>
+              <button class="delivery-choice" type="button" aria-pressed="false" data-quote-delivery-id="izmir-site" data-quote-delivery="İzmir şantiye teslimi" disabled><strong>İzmir şantiye</strong><span>Proje adresine sevkiyat</span></button>
+              <button class="delivery-choice" type="button" aria-pressed="false" data-quote-delivery-id="urla-site" data-quote-delivery="Urla şantiye teslimi" disabled><strong>Urla şantiye</strong><span>Urla bölgesine sevkiyat</span></button>
+              <button class="delivery-choice" type="button" aria-pressed="false" data-quote-delivery-id="alsancak-port" data-quote-delivery="Alsancak Limanı teslimi" disabled><strong>Alsancak Limanı</strong><span>İhracat sevkiyatı</span></button>
+              <button class="delivery-choice" type="button" aria-pressed="false" data-quote-delivery-id="aliaga-port" data-quote-delivery="Aliağa Limanı teslimi" disabled><strong>Aliağa Limanı</strong><span>İhracat sevkiyatı</span></button>
             </div>
           </div>
-          <p class="quote-console-status" role="status" aria-live="polite" data-quote-status></p>
+          <div class="console-order-actions">
+            <button class="button button-primary console-apply" type="button" aria-describedby="quote-console-status-tr" data-quote-apply disabled>Sipariş Ver</button>
+            <p class="quote-console-status" id="quote-console-status-tr" role="status" aria-live="polite" data-quote-status>Önce malzeme seçin.</p>
+          </div>
         </div>
       </section>
 
@@ -868,6 +871,6 @@
       </div>
     </footer>
 
-    <script src="script.js?v=20260730-liquid-glass-1"></script>
+    <script src="script.js?v=20260730-order-flow-2"></script>
   </body>
 </html>

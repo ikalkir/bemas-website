@@ -341,7 +341,7 @@ button.button-primary[type="submit"]:hover,
   position: relative;
   z-index: 3;
   display: grid;
-  grid-template-columns: minmax(230px, 0.95fr) minmax(310px, 1.2fr) minmax(230px, 0.9fr);
+  grid-template-columns: minmax(250px, 0.95fr) minmax(220px, 0.72fr) minmax(280px, 1.08fr);
   grid-column: 1;
   grid-row: 2;
   gap: 0;
@@ -371,19 +371,31 @@ button.button-primary[type="submit"]:hover,
 }
 
 .console-products,
-.console-capacity,
+.console-tonnage,
 .console-logistics {
   min-width: 0;
   padding: 4px 22px;
+}
+
+.console-step {
+  transition: opacity 180ms ease;
+}
+
+.console-step.is-locked {
+  opacity: 0.58;
+}
+
+.console-step.is-locked :is(button, input) {
+  cursor: not-allowed;
 }
 
 .console-products {
   padding-left: 4px;
 }
 
-.console-capacity {
+.console-tonnage {
   display: grid;
-  align-content: space-between;
+  align-content: start;
   border-right: 1px solid rgba(255, 255, 255, 0.16);
   border-left: 1px solid rgba(255, 255, 255, 0.16);
 }
@@ -434,8 +446,8 @@ button.button-primary[type="submit"]:hover,
 
 .quote-choice:hover,
 .quote-choice:focus-visible,
-.delivery-choice:hover,
-.delivery-choice:focus-visible {
+.delivery-choice:not(:disabled):hover,
+.delivery-choice:not(:disabled):focus-visible {
   border-color: rgba(255, 255, 255, 0.42);
   background: rgba(255, 255, 255, 0.1);
 }
@@ -488,38 +500,69 @@ button.button-primary[type="submit"]:hover,
   background-image: url("assets/optimized/excavator-rock.webp");
 }
 
-.console-metric-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 2px 0 22px;
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
-}
-
-.console-metric-grid div {
-  display: grid;
-  align-content: center;
-  min-width: 0;
-  min-height: 112px;
-  padding: 12px;
-  text-align: center;
-}
-
-.console-metric-grid div + div {
-  border-left: 1px solid rgba(255, 255, 255, 0.16);
-}
-
-.console-metric-grid strong {
-  color: #fff;
-  font-size: clamp(1.8rem, 3.2vw, 3rem);
-  line-height: 1;
-  letter-spacing: -0.04em;
-}
-
-.console-metric-grid span {
-  margin-top: 7px;
+.tonnage-label {
+  margin: 4px 0 10px;
   color: rgba(255, 255, 255, 0.62);
-  font-size: 0.7rem;
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.tonnage-input-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  min-height: 68px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.055);
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.tonnage-input-shell:focus-within {
+  border-color: rgba(111, 157, 255, 0.82);
+  background: rgba(37, 83, 190, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(111, 157, 255, 0.18);
+}
+
+.tonnage-input-shell input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 0;
+  appearance: textfield;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: clamp(1.35rem, 2.2vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.tonnage-input-shell input::-webkit-inner-spin-button,
+.tonnage-input-shell input::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.tonnage-input-shell input::placeholder {
+  color: rgba(255, 255, 255, 0.34);
+}
+
+.tonnage-input-shell input:disabled {
+  color: rgba(255, 255, 255, 0.5);
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.5);
+  opacity: 1;
+}
+
+.tonnage-input-shell span {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
 .console-apply {
@@ -536,6 +579,10 @@ button.button-primary[type="submit"]:hover,
   padding: 10px;
   border-color: transparent;
   background: transparent;
+}
+
+.delivery-choice:disabled {
+  cursor: not-allowed;
 }
 
 .delivery-choice strong {
@@ -555,6 +602,26 @@ button.button-primary[type="submit"]:hover,
   color: #dbe7ff;
   font-size: 0.76rem;
   text-align: center;
+}
+
+.console-order-actions {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: 18px;
+  margin-top: 18px;
+  padding: 18px 4px 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.console-order-actions .console-apply {
+  flex: 0 1 460px;
+}
+
+.console-order-actions .quote-console-status {
+  flex: 1;
+  margin: 0;
+  text-align: left;
 }
 
 .quote-console-status:empty {
@@ -1079,17 +1146,12 @@ button.button-primary[type="submit"]:hover,
   border-radius: 14px;
   background: #fff;
   box-shadow: none;
-  filter: grayscale(1);
-  opacity: 0.72;
-  transition:
-    filter 180ms ease,
-    opacity 180ms ease,
-    transform 180ms ease;
+  filter: none;
+  opacity: 1;
+  transition: transform 180ms ease;
 }
 
 .reference-grid article:hover {
-  filter: grayscale(0);
-  opacity: 1;
   transform: translateY(-2px);
 }
 
@@ -1631,7 +1693,7 @@ button.button-primary[type="submit"]:hover,
   }
 
   .delivery-choice-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -1685,7 +1747,7 @@ button.button-primary[type="submit"]:hover,
   }
 
   .console-products,
-  .console-capacity,
+  .console-tonnage,
   .console-logistics {
     padding: 18px 4px;
   }
@@ -1694,7 +1756,7 @@ button.button-primary[type="submit"]:hover,
     padding-top: 4px;
   }
 
-  .console-capacity {
+  .console-tonnage {
     border: 0;
     border-top: 1px solid rgba(255, 255, 255, 0.16);
     border-bottom: 1px solid rgba(255, 255, 255, 0.16);
@@ -1703,6 +1765,24 @@ button.button-primary[type="submit"]:hover,
   .console-logistics {
     grid-column: auto;
     border-top: 0;
+  }
+
+  .delivery-choice-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .console-order-actions {
+    flex-direction: column;
+    align-items: stretch;
+    margin-top: 0;
+  }
+
+  .console-order-actions .console-apply {
+    flex-basis: auto;
+  }
+
+  .console-order-actions .quote-console-status {
+    text-align: center;
   }
 
   .trust-strip {
@@ -1866,15 +1946,6 @@ button.button-primary[type="submit"]:hover,
   .quote-swatch {
     width: 32px;
     height: 30px;
-  }
-
-  .console-metric-grid div {
-    min-height: 94px;
-    padding: 8px 4px;
-  }
-
-  .console-metric-grid strong {
-    font-size: 1.7rem;
   }
 
   .delivery-choice-list {
