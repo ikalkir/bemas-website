@@ -2,6 +2,7 @@ const menuToggle = document.querySelector("[data-menu-toggle]");
 const nav = document.querySelector("[data-nav]");
 const contactForm = document.querySelector("[data-contact-form]");
 const formStatus = document.querySelector("[data-form-status]");
+const quoteConsoles = document.querySelectorAll("[data-quote-console]");
 const languageLinks = document.querySelectorAll("[data-lang-choice]");
 const animatedSections = document.querySelectorAll("[data-animate]");
 const staggerGroups = document.querySelectorAll(".stagger-group");
@@ -107,6 +108,25 @@ const formMessages = {
     unavailable: "Your request could not be sent right now. Please email info@bemasmining.com.",
   },
 };
+
+const quoteConsoleMessages = {
+  tr: {
+    blockTitle: "Teklif planlayıcı seçimi",
+    product: "Ürün / ebat",
+    delivery: "Teslimat",
+    success: "Seçiminiz teklif formuna aktarıldı. Eksik iletişim alanını doldurarak devam edebilirsiniz.",
+    unavailable: "Teklif formu bu sayfada bulunamadı.",
+  },
+  en: {
+    blockTitle: "Quote planner selection",
+    product: "Product / size",
+    delivery: "Delivery",
+    success: "Your selection was added to the quote form. Complete the missing contact fields to continue.",
+    unavailable: "The quote form is not available on this page.",
+  },
+};
+
+const quoteConsoleState = new WeakMap();
 
 function normalizeLanguage(value) {
   return value === "tr" || value === "en" ? value : "";
@@ -619,6 +639,11 @@ function markCloneInactive(clone, cloneDatasetName) {
   clone.setAttribute("aria-hidden", "true");
   clone.removeAttribute("id");
   clone.querySelectorAll("[id]").forEach((item) => item.removeAttribute("id"));
+  clone.querySelectorAll("img").forEach((image) => {
+    image.loading = "lazy";
+    image.decoding = "async";
+    image.setAttribute("fetchpriority", "low");
+  });
   clone.querySelectorAll("a, button, input, select, textarea, [tabindex]").forEach((item) => {
     item.setAttribute("tabindex", "-1");
   });
@@ -819,14 +844,18 @@ function setupLoopingCarousel({
       writeScrollLeft(scrollElement.scrollLeft + loopDistance);
     }
 
-    scrollElement.scrollBy({ left: direction * amount, behavior: "smooth" });
+    scrollElement.scrollBy({ left: direction * amount, behavior: reducedMotionQuery.matches ? "auto" : "smooth" });
     window.setTimeout(normalizeScrollPosition, 760);
   };
 
   requestAnimationFrame(updateCarouselMetrics);
-  window.setTimeout(updateCarouselMetrics, 400);
-  window.setTimeout(updateCarouselMetrics, 1200);
-  window.addEventListener("resize", updateCarouselMetrics, { passive: true });
+  const carouselResizeObserver = "ResizeObserver" in window ? new ResizeObserver(updateCarouselMetrics) : null;
+  if (carouselResizeObserver) {
+    carouselResizeObserver.observe(scrollElement);
+    originals.forEach((item) => carouselResizeObserver.observe(item));
+  } else {
+    window.addEventListener("resize", updateCarouselMetrics, { passive: true });
+  }
   window.addEventListener("orientationchange", () => {
     window.setTimeout(updateCarouselMetrics, 240);
   });
@@ -895,12 +924,12 @@ function setupLoopingCarousel({
   syncAnimation();
 }
 
-function setupCertificateCarousels() {
-  if (!certificateTracks.length) {
+function setupCertificateCarousels(tracks = certificateTracks) {
+  if (!tracks.length) {
     return;
   }
 
-  certificateTracks.forEach((track) => {
+  Array.from(tracks).forEach((track) => {
     if (track.dataset.carouselReady === "true") {
       return;
     }
@@ -938,13 +967,15 @@ function setupCertificateCarousels() {
   });
 }
 
-function setupGalleryCarousels() {
-  [
-    { selector: "[data-materials-carousel]", cardClass: "materials-carousel-card", buttonPrefix: "materials" },
-    { selector: "[data-izmir-carousel]", cardClass: "izmir-carousel-card", buttonPrefix: "izmir" },
-    { selector: "[data-urla-carousel]", cardClass: "urla-carousel-card", buttonPrefix: "urla" },
-    { selector: "[data-machinery-carousel]", cardClass: "machinery-carousel-card", buttonPrefix: "machinery" },
-  ].forEach(({ selector, cardClass, buttonPrefix }) => {
+const galleryCarouselConfigs = [
+  { selector: "[data-materials-carousel]", cardClass: "materials-carousel-card", buttonPrefix: "materials" },
+  { selector: "[data-izmir-carousel]", cardClass: "izmir-carousel-card", buttonPrefix: "izmir" },
+  { selector: "[data-urla-carousel]", cardClass: "urla-carousel-card", buttonPrefix: "urla" },
+  { selector: "[data-machinery-carousel]", cardClass: "machinery-carousel-card", buttonPrefix: "machinery" },
+];
+
+function setupGalleryCarousels(configs = galleryCarouselConfigs) {
+  configs.forEach(({ selector, cardClass, buttonPrefix }) => {
     const carousel = document.querySelector(selector);
     if (!carousel) {
       return;
@@ -967,6 +998,56 @@ function setupGalleryCarousels() {
       desktopSpeed: 52,
     });
   });
+}
+
+function setupDeferredCarousels() {
+  const starters = new Map();
+
+  certificateTracks.forEach((track) => {
+    const carousel = track.closest(".certificate-carousel");
+    if (carousel) {
+      starters.set(carousel, () => setupCertificateCarousels([track]));
+    }
+  });
+
+  galleryCarouselConfigs.forEach((config) => {
+    const carousel = document.querySelector(config.selector);
+    if (!carousel || window.getComputedStyle(carousel.closest("section") || carousel).display === "none") {
+      return;
+    }
+
+    starters.set(carousel, () => setupGalleryCarousels([config]));
+  });
+
+  if (!starters.size) {
+    return;
+  }
+
+  if (!("IntersectionObserver" in window)) {
+    starters.forEach((start) => start());
+    return;
+  }
+
+  const setupObserver = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) {
+          return;
+        }
+
+        starters.get(entry.target)?.();
+        observer.unobserve(entry.target);
+        starters.delete(entry.target);
+      });
+    },
+    {
+      root: null,
+      rootMargin: "600px 0px",
+      threshold: 0,
+    },
+  );
+
+  starters.forEach((start, target) => setupObserver.observe(target));
 }
 
 function revealHashTarget(observer) {
@@ -1022,10 +1103,127 @@ function setupScrollAnimations() {
   window.addEventListener("hashchange", () => revealHashTarget(revealObserver));
 }
 
-setupCertificateCarousels();
-setupGalleryCarousels();
+function sanitizeQuoteText(value) {
+  return String(value || "").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "");
+}
+
+function setQuoteChoice(group, selectedButton) {
+  group.forEach((button) => {
+    const isSelected = button === selectedButton;
+    button.classList.toggle("is-selected", isSelected);
+    button.setAttribute("aria-pressed", String(isSelected));
+  });
+}
+
+function quoteMessageWithUserText(textarea, generatedBlock, previousBlock = "") {
+  const maxLength = Number(textarea.maxLength) > 0 ? Number(textarea.maxLength) : 2000;
+  const currentValue = sanitizeQuoteText(textarea.value);
+  let userText = currentValue;
+
+  if (previousBlock && currentValue === previousBlock) {
+    userText = "";
+  } else if (previousBlock && currentValue.startsWith(`${previousBlock}\n\n`)) {
+    userText = currentValue.slice(previousBlock.length + 2);
+  }
+
+  if (!userText) {
+    return generatedBlock.slice(0, maxLength);
+  }
+
+  const separator = "\n\n";
+  const availableForBlock = Math.max(0, maxLength - userText.length - separator.length);
+  if (!availableForBlock) {
+    return userText.slice(0, maxLength);
+  }
+
+  return `${generatedBlock.slice(0, availableForBlock)}${separator}${userText}`.slice(0, maxLength);
+}
+
+function setupQuoteConsoles() {
+  quoteConsoles.forEach((consoleElement) => {
+    const language = consoleElement.dataset.language === "en" ? "en" : "tr";
+    const messages = quoteConsoleMessages[language];
+    const productChoices = Array.from(consoleElement.querySelectorAll("[data-quote-product]"));
+    const deliveryChoices = Array.from(consoleElement.querySelectorAll("[data-quote-delivery]"));
+    const applyButton = consoleElement.querySelector("[data-quote-apply]");
+    const consoleStatus = consoleElement.querySelector("[data-quote-status]");
+
+    productChoices.forEach((button) => {
+      button.addEventListener("click", () => setQuoteChoice(productChoices, button));
+    });
+
+    deliveryChoices.forEach((button) => {
+      button.addEventListener("click", () => setQuoteChoice(deliveryChoices, button));
+    });
+
+    applyButton?.addEventListener("click", () => {
+      if (!contactForm) {
+        if (consoleStatus) {
+          consoleStatus.textContent = messages.unavailable;
+        }
+        return;
+      }
+
+      const productChoice = productChoices.find((button) => button.classList.contains("is-selected")) || productChoices[0];
+      const deliveryChoice = deliveryChoices.find((button) => button.classList.contains("is-selected")) || deliveryChoices[0];
+      const productField = contactForm.elements.namedItem("product");
+      const messageField = contactForm.elements.namedItem("message");
+
+      if (!(productField instanceof HTMLSelectElement) || !(messageField instanceof HTMLTextAreaElement)) {
+        if (consoleStatus) {
+          consoleStatus.textContent = messages.unavailable;
+        }
+        return;
+      }
+
+      const productValue = sanitizeQuoteText(productChoice?.dataset.quoteProduct);
+      const productLabel = sanitizeQuoteText(productChoice?.dataset.quoteLabel);
+      const productSize = sanitizeQuoteText(productChoice?.dataset.quoteSize);
+      const delivery = sanitizeQuoteText(deliveryChoice?.dataset.quoteDelivery);
+      const productDescription =
+        productSize && !productLabel.toLocaleLowerCase(language).includes(productSize.toLocaleLowerCase(language))
+          ? `${productLabel} — ${productSize}`
+          : productLabel;
+      const generatedBlock = [
+        `${messages.blockTitle}:`,
+        `${messages.product}: ${productDescription}`,
+        `${messages.delivery}: ${delivery}`,
+      ].join("\n");
+      const previousBlock = quoteConsoleState.get(consoleElement)?.generatedBlock || "";
+
+      if (Array.from(productField.options).some((option) => option.value === productValue)) {
+        productField.value = productValue;
+        productField.dispatchEvent(new Event("input", { bubbles: true }));
+        productField.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+
+      messageField.value = quoteMessageWithUserText(messageField, generatedBlock, previousBlock);
+      messageField.dispatchEvent(new Event("input", { bubbles: true }));
+      quoteConsoleState.set(consoleElement, { generatedBlock });
+
+      if (consoleStatus) {
+        consoleStatus.textContent = messages.success;
+      }
+
+      contactForm.closest("#iletisim")?.scrollIntoView({
+        behavior: reducedMotionQuery.matches ? "auto" : "smooth",
+        block: "start",
+      });
+
+      window.requestAnimationFrame(() => {
+        const firstBlankRequiredField = Array.from(contactForm.querySelectorAll("[required]")).find(
+          (field) => "value" in field && !String(field.value || "").trim(),
+        );
+        firstBlankRequiredField?.focus({ preventScroll: true });
+      });
+    });
+  });
+}
+
+setupDeferredCarousels();
 setupScrollAnimations();
 setupCounters();
+setupQuoteConsoles();
 
 languageLinks.forEach((link) => {
   const language = normalizeLanguage(link.dataset.langChoice);
@@ -1120,7 +1318,7 @@ if (menuToggle && nav) {
     }
   });
 
-  const compactNavigationQuery = window.matchMedia("(max-width: 1200px)");
+  const compactNavigationQuery = window.matchMedia("(max-width: 1240px)");
   compactNavigationQuery.addEventListener("change", (event) => {
     if (!event.matches) {
       setMenuOpen(false);

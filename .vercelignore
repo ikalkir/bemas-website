@@ -1,7 +1,9 @@
 .git/
 .vercel/
 .playwright-cli/
+.design-qa/
 database/
+design-qa.md
 docs/
 output/
 tests/

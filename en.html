@@ -39,6 +39,7 @@
       imagesizes="(max-width: 500px) calc(100vw - 32px), (max-width: 1080px) min(760px, calc(100vw - 48px)), 660px"
     />
     <link rel="stylesheet" href="styles.css?v=20260722-semantic-containers-1" />
+    <link rel="stylesheet" href="liquid-glass.css?v=20260730-liquid-glass-1" />
 
     <meta name="bemas-analytics-id" content="G-EZXXP8FV8T" />
 
@@ -120,29 +121,66 @@
           class="hero-image"
           src="assets/optimized/showcase/bornova-quarry-hero-operation-1600.webp"
           srcset="assets/optimized/showcase/bornova-quarry-hero-operation-720.webp 720w, assets/optimized/showcase/bornova-quarry-hero-operation-800.webp 800w, assets/optimized/showcase/bornova-quarry-hero-operation-1600.webp 1600w"
-          sizes="(max-width: 500px) calc(100vw - 32px), (max-width: 1080px) min(760px, calc(100vw - 48px)), 660px"
+          sizes="100vw"
           width="1600"
           height="1200"
-          alt="Drone view of Bemaş quarry and crushing screening plant"
+          alt="Bemaş Bornova quarry and aggregate production operation"
           fetchpriority="high"
           decoding="async"
         />
         <div class="hero-content">
-          <h1>Aggregate and Crushed Stone Production in Izmir, Bornova and Urla</h1>
-          <p>
-            At our quarry sites in Izmir Bornova and Urla, we produce aggregate, crushed stone, stone dust,
-            stabilized aggregate, riprap stone and fill material with our crushing and screening plants.
+          <span class="eyebrow hero-eyebrow">Producing in Izmir since 1960</span>
+          <h1>Reliable aggregate supply, from quarry to project.</h1>
+          <p class="hero-lede">
+            Aggregate production for concrete, asphalt, infrastructure and export projects from our two active sites in Bornova and Urla.
           </p>
+          <p class="hero-context">Crushed stone, stone dust, stabilized aggregate, fill material and riprap solutions in Izmir.</p>
           <div class="hero-actions" role="group" aria-label="Quick links">
-            <a class="button button-primary" href="#iletisim">
-              Request a Quote
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
-            </a>
-            <a class="button button-secondary" href="#sites">Our Sites</a>
+            <a class="button button-primary" href="#iletisim">Request a Quote</a>
+            <a class="button button-secondary" href="#sites">Explore Our Sites</a>
           </div>
         </div>
+
+        <div class="hero-console" data-quote-console data-language="en" role="region" aria-labelledby="quote-console-title-en">
+          <div class="console-products">
+            <p class="console-label" id="quote-console-title-en">Choose product / size</p>
+            <div class="quote-choice-list" role="group" aria-label="Product and size options">
+              <button class="quote-choice is-selected" type="button" aria-pressed="true" data-quote-product="crushed-stone" data-quote-size="0–5 mm" data-quote-label="Crushed stone 0–5 mm"><span class="quote-swatch swatch-fine" aria-hidden="true"></span>Crushed stone 0–5 mm</button>
+              <button class="quote-choice" type="button" aria-pressed="false" data-quote-product="crushed-stone" data-quote-size="5–12 mm" data-quote-label="Crushed stone 5–12 mm"><span class="quote-swatch swatch-medium" aria-hidden="true"></span>Crushed stone 5–12 mm</button>
+              <button class="quote-choice" type="button" aria-pressed="false" data-quote-product="crushed-stone" data-quote-size="12–22 mm" data-quote-label="Crushed stone 12–22 mm"><span class="quote-swatch swatch-coarse" aria-hidden="true"></span>Crushed stone 12–22 mm</button>
+              <button class="quote-choice" type="button" aria-pressed="false" data-quote-product="stabilized-aggregate" data-quote-size="Project-specific" data-quote-label="Stabilized aggregate"><span class="quote-swatch swatch-stabilized" aria-hidden="true"></span>Stabilized aggregate</button>
+              <button class="quote-choice" type="button" aria-pressed="false" data-quote-product="fill-material" data-quote-size="20–70 mm" data-quote-label="Fill material"><span class="quote-swatch swatch-fill" aria-hidden="true"></span>Fill material</button>
+              <button class="quote-choice" type="button" aria-pressed="false" data-quote-product="riprap-stone" data-quote-size="Project-specific" data-quote-label="Riprap"><span class="quote-swatch swatch-riprap" aria-hidden="true"></span>Riprap</button>
+            </div>
+          </div>
+
+          <div class="console-capacity" role="group" aria-label="Production capacity">
+            <p class="console-label">Our capacity</p>
+            <div class="console-metric-grid">
+              <div><strong>2</strong><span>active sites</span></div>
+              <div><strong>850</strong><span>tons/hour</span></div>
+              <div><strong>2.1M</strong><span>tons/year</span></div>
+            </div>
+            <button class="button button-primary console-apply" type="button" data-quote-apply>Send product and delivery to the form</button>
+          </div>
+
+          <div class="console-logistics">
+            <p class="console-label">Delivery &amp; logistics</p>
+            <div class="delivery-choice-list" role="group" aria-label="Delivery destination options">
+              <button class="delivery-choice is-selected" type="button" aria-pressed="true" data-quote-delivery="Izmir project-site delivery"><strong>Izmir project site</strong><span>From Bornova or Urla</span></button>
+              <button class="delivery-choice" type="button" aria-pressed="false" data-quote-delivery="Alsancak Port delivery"><strong>Alsancak Port</strong><span>Export shipment</span></button>
+              <button class="delivery-choice" type="button" aria-pressed="false" data-quote-delivery="Aliaga Port delivery"><strong>Aliaga Port</strong><span>Export shipment</span></button>
+            </div>
+          </div>
+          <p class="quote-console-status" role="status" aria-live="polite" data-quote-status></p>
+        </div>
+      </section>
+
+      <section class="trust-strip" aria-label="Bemaş production and logistics summary">
+        <div><strong>Since 1960</strong><span>trusted production</span></div>
+        <div><strong>2 active sites</strong><span>Bornova &amp; Urla</span></div>
+        <div><strong>TSE / CE documented</strong><span>controlled production</span></div>
+        <div><strong>Alsancak &amp; Aliaga</strong><span>port access</span></div>
       </section>
 
       <section class="section intro-section animate-in" id="kurumsal" data-animate>
@@ -251,21 +289,21 @@
         </div>
         <div class="feature-grid">
           <article class="feature-card export-feature-card">
-            <div class="export-icon" aria-hidden="true">🏭</div>
+            <div class="export-icon" aria-hidden="true">01</div>
             <div>
             <h3>Two Active Production Sites</h3>
             <p>Bornova and Urla facilities provide continuous production and shipment capacity for İzmir, the Aegean Region and export projects.</p>
             </div>
           </article>
           <article class="feature-card export-feature-card">
-            <div class="export-icon" aria-hidden="true">⚓</div>
+            <div class="export-icon" aria-hidden="true">02</div>
             <div>
             <h3>Access to Alsancak and Aliağa Ports</h3>
             <p>Transportation from both facilities to Alsancak Port and Aliağa port infrastructure is available.</p>
             </div>
           </article>
           <article class="feature-card export-feature-card">
-            <div class="export-icon" aria-hidden="true">🚢</div>
+            <div class="export-icon" aria-hidden="true">03</div>
             <div>
             <h3>Export-Ready Supply</h3>
             <p>Project-based supply, logistics support and custom aggregate gradations can be provided for international customers.</p>
@@ -789,9 +827,6 @@
           <div class="contact-verification" role="group" aria-label="Security verification" data-turnstile-container></div>
           <button class="button button-primary" type="submit" data-contact-submit disabled>
             Send Request
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
           </button>
           <p class="form-status" role="status" data-form-status></p>
         </form>
@@ -840,6 +875,6 @@
       </div>
     </footer>
 
-    <script src="script.js?v=20260722-field-errors-1"></script>
+    <script src="script.js?v=20260730-liquid-glass-1"></script>
   </body>
 </html>

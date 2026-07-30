@@ -39,6 +39,7 @@
       imagesizes="(max-width: 500px) calc(100vw - 32px), (max-width: 1080px) min(760px, calc(100vw - 48px)), 660px"
     />
     <link rel="stylesheet" href="styles.css?v=20260722-semantic-containers-1" />
+    <link rel="stylesheet" href="liquid-glass.css?v=20260730-liquid-glass-1" />
 
     <meta name="bemas-analytics-id" content="G-EZXXP8FV8T" />
 
@@ -120,29 +121,66 @@
           class="hero-image"
           src="assets/optimized/showcase/bornova-quarry-hero-operation-1600.webp"
           srcset="assets/optimized/showcase/bornova-quarry-hero-operation-720.webp 720w, assets/optimized/showcase/bornova-quarry-hero-operation-800.webp 800w, assets/optimized/showcase/bornova-quarry-hero-operation-1600.webp 1600w"
-          sizes="(max-width: 500px) calc(100vw - 32px), (max-width: 1080px) min(760px, calc(100vw - 48px)), 660px"
+          sizes="100vw"
           width="1600"
           height="1200"
-          alt="Bemaş taş ocağı ve kırma eleme tesisi drone görüntüsü"
+          alt="Bemaş Bornova taş ocağı ve agrega üretim operasyonu"
           fetchpriority="high"
           decoding="async"
         />
         <div class="hero-content">
-          <h1>İzmir Bornova ve Urla'da Agrega, Mıcır ve Kırmataş Üretimi</h1>
-          <p>
-            İzmir Bornova ve Urla'daki taş ocağı sahalarımızda, kırma eleme tesislerimizle agrega, mıcır,
-            mıcır tozu, stabilize, anroşman taşı ve dolgu malzemesi üretimi yapıyoruz.
+          <span class="eyebrow hero-eyebrow">1960'tan beri İzmir'de üretim</span>
+          <h1>Sahadan projeye, güvenilir agrega tedariki.</h1>
+          <p class="hero-lede">
+            Bornova ve Urla'daki iki aktif tesisimizden beton, asfalt, altyapı ve ihracat projelerine uygun agrega üretimi.
           </p>
+          <p class="hero-context">İzmir'de mıcır, kırmataş, stabilize, dolgu ve anroşman taşı çözümleri.</p>
           <div class="hero-actions" role="group" aria-label="Hızlı bağlantılar">
-            <a class="button button-primary" href="#iletisim">
-              Teklif Alın
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
-            </a>
-            <a class="button button-secondary" href="#tesisler">Tesislerimiz</a>
+            <a class="button button-primary" href="#iletisim">Teklif Alın</a>
+            <a class="button button-secondary" href="#tesisler">Tesisleri İnceleyin</a>
           </div>
         </div>
+
+        <div class="hero-console" data-quote-console data-language="tr" role="region" aria-labelledby="quote-console-title-tr">
+          <div class="console-products">
+            <p class="console-label" id="quote-console-title-tr">Ürün / ebat seçin</p>
+            <div class="quote-choice-list" role="group" aria-label="Ürün ve ebat seçenekleri">
+              <button class="quote-choice is-selected" type="button" aria-pressed="true" data-quote-product="crushed-stone" data-quote-size="0–5 mm" data-quote-label="Mıcır 0–5 mm"><span class="quote-swatch swatch-fine" aria-hidden="true"></span>Mıcır 0–5 mm</button>
+              <button class="quote-choice" type="button" aria-pressed="false" data-quote-product="crushed-stone" data-quote-size="5–12 mm" data-quote-label="Mıcır 5–12 mm"><span class="quote-swatch swatch-medium" aria-hidden="true"></span>Mıcır 5–12 mm</button>
+              <button class="quote-choice" type="button" aria-pressed="false" data-quote-product="crushed-stone" data-quote-size="12–22 mm" data-quote-label="Mıcır 12–22 mm"><span class="quote-swatch swatch-coarse" aria-hidden="true"></span>Mıcır 12–22 mm</button>
+              <button class="quote-choice" type="button" aria-pressed="false" data-quote-product="stabilized-aggregate" data-quote-size="Proje talebine göre" data-quote-label="Stabilize"><span class="quote-swatch swatch-stabilized" aria-hidden="true"></span>Stabilize</button>
+              <button class="quote-choice" type="button" aria-pressed="false" data-quote-product="fill-material" data-quote-size="20–70 mm" data-quote-label="Dolgu"><span class="quote-swatch swatch-fill" aria-hidden="true"></span>Dolgu</button>
+              <button class="quote-choice" type="button" aria-pressed="false" data-quote-product="riprap-stone" data-quote-size="Proje talebine göre" data-quote-label="Anroşman"><span class="quote-swatch swatch-riprap" aria-hidden="true"></span>Anroşman</button>
+            </div>
+          </div>
+
+          <div class="console-capacity" role="group" aria-label="Üretim kapasitesi">
+            <p class="console-label">Kapasitemiz</p>
+            <div class="console-metric-grid">
+              <div><strong>2</strong><span>aktif tesis</span></div>
+              <div><strong>850</strong><span>ton/saat</span></div>
+              <div><strong>2,1M</strong><span>ton/yıl</span></div>
+            </div>
+            <button class="button button-primary console-apply" type="button" data-quote-apply>Ürün ve teslim noktasını forma aktar</button>
+          </div>
+
+          <div class="console-logistics">
+            <p class="console-label">Teslimat &amp; lojistik</p>
+            <div class="delivery-choice-list" role="group" aria-label="Teslimat noktası seçenekleri">
+              <button class="delivery-choice is-selected" type="button" aria-pressed="true" data-quote-delivery="İzmir şantiye teslimi"><strong>İzmir şantiye</strong><span>Bornova veya Urla çıkışlı</span></button>
+              <button class="delivery-choice" type="button" aria-pressed="false" data-quote-delivery="Alsancak Limanı teslimi"><strong>Alsancak Limanı</strong><span>İhracat sevkiyatı</span></button>
+              <button class="delivery-choice" type="button" aria-pressed="false" data-quote-delivery="Aliağa Limanı teslimi"><strong>Aliağa Limanı</strong><span>İhracat sevkiyatı</span></button>
+            </div>
+          </div>
+          <p class="quote-console-status" role="status" aria-live="polite" data-quote-status></p>
+        </div>
+      </section>
+
+      <section class="trust-strip" aria-label="Bemaş üretim ve lojistik özeti">
+        <div><strong>1960'dan beri</strong><span>sektörde güven</span></div>
+        <div><strong>2 aktif tesis</strong><span>Bornova &amp; Urla</span></div>
+        <div><strong>TSE / CE belgeli</strong><span>kontrollü üretim</span></div>
+        <div><strong>Alsancak &amp; Aliağa</strong><span>liman erişimi</span></div>
       </section>
 
       <section class="section intro-section animate-in" id="kurumsal" data-animate>
@@ -249,21 +287,21 @@
         </div>
         <div class="feature-grid">
           <article class="feature-card export-feature-card">
-            <div class="export-icon" aria-hidden="true">🏭</div>
+            <div class="export-icon" aria-hidden="true">01</div>
             <div>
             <h3>İki Aktif Üretim Tesisi</h3>
             <p>Bornova ve Urla tesisleri, İzmir ve Ege Bölgesi projeleri için sürekli üretim ve sevkiyat kapasitesi sunar.</p>
             </div>
           </article>
           <article class="feature-card export-feature-card">
-            <div class="export-icon" aria-hidden="true">⚓</div>
+            <div class="export-icon" aria-hidden="true">02</div>
             <div>
             <h3>Alsancak ve Aliağa Liman Erişimi</h3>
             <p>Her iki tesisten de Alsancak Limanı ve Aliağa liman altyapısına nakliye yapılabilir.</p>
             </div>
           </article>
           <article class="feature-card export-feature-card">
-            <div class="export-icon" aria-hidden="true">🚢</div>
+            <div class="export-icon" aria-hidden="true">03</div>
             <div>
             <h3>İhracata Uygun Üretim</h3>
             <p>Uluslararası müşteriler için proje bazlı tedarik, sevkiyat ve uygun fraksiyonlarda üretim desteği sağlanabilir.</p>
@@ -787,9 +825,6 @@
           <div class="contact-verification" role="group" aria-label="Güvenlik doğrulaması" data-turnstile-container></div>
           <button class="button button-primary" type="submit" data-contact-submit disabled>
             Talebi Gönder
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
           </button>
           <p class="form-status" role="status" data-form-status></p>
         </form>
@@ -833,6 +868,6 @@
       </div>
     </footer>
 
-    <script src="script.js?v=20260722-field-errors-1"></script>
+    <script src="script.js?v=20260730-liquid-glass-1"></script>
   </body>
 </html>
